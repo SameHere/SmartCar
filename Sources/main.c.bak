@@ -1,0 +1,94 @@
+/* main.c - Software vector mode program using C isr for MPC56xxB/P/S */
+/* Jan 15, 2009 S.Mihalik- Initial version based on previous AN2865 example */
+/* Feb 02, 2009 S.Mihalik- Changed to run in RUN0 mode instead of all DRUN mode*/
+/* May 22 2009 S. Mihalik- Simplifed by removing unneeded sysclk, PCTL code */
+/* Jul 03 2009 S Mihalik - Simplified code */
+/* Mar 14 2010 SM - modified initModesAndClock, updated header file */
+/* Copyright Freescale Semiconductor, Inc. 2009. All rights reserved. */
+
+#include "MPC5604B_0M27V_0102.h" /* Use proper include file */
+#include "MyHeader.h"
+/*---------------------------------------------------------------------------------------*/
+extern core_config();
+extern enableIrq();
+extern disableIrq();
+extern initSTM();
+extern initSCI();
+extern SCI0_SendChar();
+extern SCI0_RecvChar();
+extern initADC();
+extern initPIT();
+extern initEMIOS();
+/*---------------------------------------------------------------------------------------*/
+#define   servo1_pwm   EMIOS_0.CH[0].CBDR.R      //Maximal value is 53333
+#define   servo2_pwm   EMIOS_0.CH[17].CBDR.R     //Maximal value is 8000
+#define   motor_pwm    EMIOS_0.CH[21].CBDR.R     //Maximal value is 8000
+
+/*---------------------------------------------------------------------------------------*/
+void STM_CH0_isr(void)
+{
+  STM.CH[0].CMP.R = STM.CH[0].CMP.R + 500000; /* Set STM CH0 compare register */
+  SIU.GPDO[PCR26_PB10].R = !SIU.GPDO[PCR26_PB10].R;
+  STM.CH[0].CIR.B.CIF = 1;
+}
+/*---------------------------------------------------------------------------------------*/ 
+void PIT_CH1_isr(void)
+{
+	SIU.GPDO[PCR44_PC12].R = !SIU.GPDO[PCR44_PC12].R;
+    PIT.CH[1].TFLG.B.TIF = 1;
+}
+
+/*---------------------------------------------------------------------------------------*/ 
+void main (void)
+{
+	uint8_t temp,i = 0;
+	uint8_t *p;
+	uint16_t x,y,z;
+	
+    core_config();
+    initSCI();
+    initSTM();
+    initPIT();
+    initEMIOS();
+    
+    servo1_pwm = 25000;
+    servo2_pwm = 25000;
+    motor_pwm = 4000;
+    
+    initADC(0x20000000);            // Initialize ADC0 for scan mode
+    ADC.NCMR[0].R = 0x00004000;     // Select ANP14 inputs for conversion
+    ADC.MCR.B.NSTART=1;             /* Trigger normal conversions for ADC0 */
+
+    SIU.PCR[PCR26_PB10].R = 0x0203;  //GPIO[26] is output
+    SIU.GPDO[PCR26_PB10].R = 1;
+    SIU.PCR[PCR44_PC12].R = 0x0203;  //GPIO[44] is output
+  
+    enableIrq();             //Ensure INTC current prority=0 & enable IRQ */
+      
+  while (1)
+   { 
+       while (SCI0_RecvChar(&i))
+       {  
+        //   while (ADC.CDR[14].B.VALID == 0) {};  /* Wait for last scan to complete */
+        //   temp = (uint8_t)(ADC.CDR[14].B.CDATA/4);      /* Read ANS0 conversion result data */
+        //   SCI0_SendChar(temp);
+        
+           while(EMIOS_0.CH[1].CSR.B.FLAG == 0) {}
+           
+           x = EMIOS_0.CH[1].CADR.R;
+           y = EMIOS_0.CH[1].CBDR.R;
+           EMIOS_0.CH[1].CSR.B.FLAG = 1;
+           
+           if (EMIOS_0.CH[1].CSR.B.OVFL == 0)
+               z = x-y;
+           else 
+              {z = x-y+53332; }
+              
+           p = (uint8_t *)&z;
+           SCI0_SendChar(*p);
+           SCI0_SendChar(*(p+1));
+     
+       }
+   } 
+}
+
