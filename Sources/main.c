@@ -380,21 +380,25 @@ inline int limit(float x,float n) {
 		x=n+9;
 	else if(n-x>9)
 		x=n-9;
-	
+	/*
 	if(x>150)
 		return 150;
 	else if(x<-150)
-		return -500;
+		return -150;
 	else
+	*/
 		return x;
 }
 /*-------------------------------------------------------------------*/
 inline int lost(int a,int b,int error,int16_t *AD) {
 	if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
+		/*
 		if(Position==0)
 			return -150;
 		else if(Position==3)
 			return 150;
+		*/
+		return laserror;
 	}else	
 		return error;
 }
@@ -1606,7 +1610,7 @@ int FuzzyKP() {
 
 	for (i = 0; i < 4; i++) {
 		Numerator += KPdan[Temp[0][i]]*Temp[1][i] ;
-		Denominator = Temp[1][i];
+		Denominator += Temp[1][i];
 	}
 	if (Denominator < 2)
 		Denominator = 1;
@@ -1781,24 +1785,21 @@ void main ( void )
     OLED_Clear( 0,7 );
     Car_Distance=0;
 
-    while ( 1 )
-    {
+    while ( 1 ) {
     	Sampling( );
 		Normalization( ADaverage, Noise_Value, Max_Value, AD, 6 );
         Position_analyse_front( NormalizePT, Max_Value, AD ); 
         temp=ABS(Error,0);
         Servo_PD( AD );
-        /*
         if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-        	
+        
         	OLED_ShowNum( 0,0,AD[0],4,16 );
         	OLED_ShowNum( 40,0,AD[1],4,16 );
         	OLED_ShowNum( 80,0,AD[2],4,16 );
         	
         	OLED_ShowNum( 40,3,ABS(Error,0),4,16 );
         	//OLED_ShowNum( 40,6,ABS(ErrorM,0),4,16 );  	
-        }
-         */     
+        }     
         if(ABS(Car_Distance,0)>Distance) {
         	Speed_PID( smartcar_speed, 0 );	
         } else {
@@ -1809,7 +1810,6 @@ void main ( void )
 	        			temp /= 20;
 	        			Speed = PAR.Speed_Set-100*temp;
 	        		}else 
-	        		
 	        			Speed = PAR.Speed_Set;
 	        		Speed_PID( smartcar_speed, Speed );
 	            	flage_tiaosu = 0;
@@ -1817,11 +1817,9 @@ void main ( void )
         	}
         	
         }
-
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     StopCar();     
-    }
-	
+    }	
 }
 
 
