@@ -64,15 +64,17 @@ struct motor_PID
 /*************************新算法各类变量*****************************/
 
 int Error=0;
+int ErrorRate=0;
 int LastError=0;
 uint16_t ADC_flag = 0;
 int16_t ADaverage[6] = {0};		 	    // 采样处理后的均值
 int laserror=0;
 uint8_t Position=0;
+int Distance=1200;
 uint8_t P[10]={14,13,12,11,9,7,6,5,4,4};
 //uint8_t P[10]={16,15,14,13,12,9,8,7,6,5};
-int Thread=800;
-int thread=6;
+int Thread=600;
+int thread=7;
 //=====================================================================//
 ////////////////////////按键、蜂鸣器、指示灯初始化//////////////////////
 //====================================================================//
@@ -190,8 +192,8 @@ void Show_Me_Data( uint16_t number_test,uint8_t change,uint8_t flag )
             OLED_ShowString( 0,0,"Steer_D:",16 );
             break;
         case  5:
-        	PAR.Lost_Line = number_test;
-        	OLED_ShowString( 0,0,"LostLine:",16 );
+        	Distance = number_test;
+        	OLED_ShowString( 0,0,"Distance:",16 );
         	break;
         case  6:
         	PAR.Set_Steer_P = number_test;
@@ -242,10 +244,10 @@ void xianshi( void )
         Show_Me_Data( PAR.Speed_Set,50,1 );
         Show_Me_Data( Thread, 25, 7 );
         Show_Me_Data( thread,1,8 );
-
+		Show_Me_Data( PAR.Steer_P,1,3 );
         Show_Me_Data( PAR.Steer_D,1,4 );
         
-        //Show_Me_Data( PAR.Lost_Line, 2, 5 );
+        Show_Me_Data( Distance, 100, 5 );
         
         //Show_Me_Data( PAR.Set_Steer_P, 1, 6 );
 
@@ -357,22 +359,38 @@ float ABS_f( float x,float y )
     else	return( y-x );
 }
 /*-------------------------------------------------------------------*/
+int Least_Square_Method(int n, int* data) {
+	int i, K=0,sumxy = 0, sumx = 0, sumy = 0, sumxx = 0, Numerator = 0, Denominator;
+	for (i = 0; i < n; i++) {
+		sumxy += (i*data[i]);
+		sumx += i;
+		sumy += data[i];
+		sumxx += (i*i);
+	}
+	Numerator  = n*sumxy - sumx*sumy;
+	Denominator = n*sumxx - sumx*sumx;
+	if (Denominator == 0)
+		Denominator = 1;
+	K = Numerator / Denominator;
+	return K;
+}
+/*-------------------------------------------------------------------*/
 inline int limit(float x,float n) {
-	if(x-n>4)
-		x=n+4;
-	else if(n-x>4)
-		x=n-4;
+	if(x-n>9)
+		x=n+9;
+	else if(n-x>9)
+		x=n-9;
 	
 	if(x>150)
 		return 150;
 	else if(x<-150)
-		return -150;
+		return -500;
 	else
 		return x;
 }
 /*-------------------------------------------------------------------*/
 inline int lost(int a,int b,int error,int16_t *AD) {
-	if((a<10||b<10)&&ABS(a,b)<5||AD[1]<thread) {
+	if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
 		if(Position==0)
 			return -150;
 		else if(Position==3)
@@ -609,7 +627,7 @@ void EMIOS0_CH20_21_isr( void )
     distance_time++;
     Distance_Count++;
 //	SIU.GPDO[PCR38_PC6].R = !SIU.GPDO[PCR38_PC6].R;
-
+	
 	SIU.PCR[PCR66_PE2].R = port_input;
 	
     	if(SIU.GPDI[PCR66_PE2].R==0)
@@ -1300,6 +1318,7 @@ int MarkError[ARR_MARKERROR_LENGTH] = {0};
 uint8_t  Max_Cross = 1;           //初始化值给1，使其开始记录上次的位置
 uint16_t Max_Old = 0;         //记录上一次的最大电感位置
 uint8_t Position_Old = 1;
+int ErrorM=0;
 void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 {
 
@@ -1368,7 +1387,17 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     Position_Old = Position;
     
 /*-----------------------------计算偏移量----------------------------------*/
+	/*
+	if(Position==0)
+		ErrorM=-(200-AD[1])/2;
+	else if(Position==3)
+		ErrorM=(200-AD[1])/2;
+	else
+		ErrorM=0;
+	*/
 	Error1=lost(AD[0],AD[2],limit((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread,(float)laserror),AD);
+	//if(ErrorM!=0)
+	//	Error1=(thread*Error1+(10-thread)*ErrorM)/10;
 	laserror=Error1;
     Error =  Error1;
 /************************************Error存储************************************************/
@@ -1381,15 +1410,218 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     }
     Errorall/=10;
 }
+/******************************模糊控制相关变量*************************************/
+int KPe=0,KPe_lishudu=0,KPec=0,KPec_lishudu=0;
+int Error_lishudu_Max = 200;
+int Error_c_lishudu_Max = 200;
+int Temp[4][4]={0};
+int SetError[7]={-85 ,  -65 , -40,  0 , 40 ,  65 , 85};
+int SetErrorRate[7]={-25 , -19 , -10 , 0 , 10 , 19 , 25};
+int KPdan[7] = { 95, 80, 68, 28, 68, 80, 95 };
+int KPrule[7][7] = { 	
+	//误差变化率  0---1---2---3---4---5---6      //误差                                   
+	0, 0, 0, 0, 1, 2, 3,    //0  -3
+	0, 0, 0, 1, 2, 3, 3,    //1  -2 
+	0, 1, 1, 2, 3, 3, 4,    //2  -1   
+	1, 2, 2, 3, 4, 4, 5,    //3   0  
+	2, 3, 3, 4, 5, 5, 6,    //4   1 
+	3, 3, 4, 5, 6, 6, 6,    //5   2  
+	3, 4, 5, 6, 6, 6, 6      //6   3  
+};			//KP规则表
+/******************************获得P值*********************************************************/
+int FuzzyKP() {
+	int Numerator=0,Denominator=0,i=0;
+	
+	/******************************用Error求KP*************************************/
+	if (Error >= SetError[0] && Error < SetError[6]) {
+		if (Error < (SetError[0] + SetError[1]) / 2) {
+			KPe = 0;
+			KPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[0]) / (SetError[1] - SetError[0]);
+		}else if (Error<SetError[1]){
+			KPe = 0;
+			KPe_lishudu = Error_lishudu_Max * (SetError[1] - Error) / (SetError[1] - SetError[0]);
+		}
+		else if (Error < (SetError[1] + SetError[2]) / 2) {
+			KPe = 1;
+			KPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[1]) / (SetError[2] - SetError[1]);
+		}
+		else if (Error<SetError[2]) {
+			KPe = 1;
+			KPe_lishudu = Error_lishudu_Max * (SetError[2] - Error) / (SetError[2] - SetError[1]);
+		}
+		else if (Error < (SetError[2] + SetError[3]) / 2) {
+			KPe = 2;
+			KPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[2]) / (SetError[3] - SetError[2]);
+		}
+		else if (Error<SetError[3]) {
+			KPe = 2;
+			KPe_lishudu = Error_lishudu_Max * (SetError[3] - Error) / (SetError[3] - SetError[2]);
+		}
+		else if (Error < (SetError[3] + SetError[4]) / 2) {
+			KPe = 3;
+			KPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[3]) / (SetError[4] - SetError[3]);
+		}
+		else if (Error<SetError[4]) {
+			KPe = 3;
+			KPe_lishudu = Error_lishudu_Max * (SetError[4] - Error) / (SetError[4] - SetError[3]);
+		}
+		else if (Error < (SetError[4] + SetError[5]) / 2) {
+			KPe = 4;
+			KPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[4]) / (SetError[5] - SetError[4]);
+		}
+		else if (Error<SetError[5]) {
+			KPe = 4;
+			KPe_lishudu = Error_lishudu_Max * (SetError[5] - Error) / (SetError[5] - SetError[4]);
+		}
+		else if (Error < (SetError[5] + SetError[6]) / 2) {
+			KPe = 5;
+			KPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[5]) / (SetError[6] - SetError[5]);
+		}
+		else if (Error<SetError[6]) {
+			KPe = 5;
+			KPe_lishudu = Error_lishudu_Max * (SetError[6] - Error) / (SetError[6] - SetError[5]);
+		}
+	}else if (Error<SetError[0]) {
+		KPe = 0;
+		KPe_lishudu = Error_lishudu_Max;
+	}else {
+		KPe = 5;
+		KPe_lishudu = 0;
+	}
 
+	/******************************用Error变化率求KPec*************************************/
+	/******************************用Error变化率求*************************************/
+	/******************************用Error变化率求*************************************/
+	if (ErrorRate >= SetErrorRate[0] && ErrorRate < SetErrorRate[6]) {
+		if (ErrorRate < (SetErrorRate[0] + SetErrorRate[1]) / 2) {
+			KPec = 0;
+			KPec_lishudu = Error_c_lishudu_Max - Error_c_lishudu_Max * (ErrorRate - SetErrorRate[0]) / (SetErrorRate[1] - SetErrorRate[0]);
+		}
+		else if (ErrorRate<SetErrorRate[1]){
+			KPec = 0;
+			KPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[1] - ErrorRate) / (SetErrorRate[1] - SetErrorRate[0]);
+		}
+		else if (ErrorRate < (SetErrorRate[1] + SetErrorRate[2]) / 2) {
+			KPec = 1;
+		}
+		else if (ErrorRate<SetErrorRate[2]) {
+			KPec = 1;
+			KPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[2] - ErrorRate) / (SetErrorRate[2] - SetErrorRate[1]);
+		}
+		else if (ErrorRate < (SetErrorRate[2] + SetErrorRate[3]) / 2) {
+			KPec = 2;
+		}
+		else if (ErrorRate<SetErrorRate[3]) {
+			KPec = 2;
+			KPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[3] - ErrorRate) / (SetErrorRate[3] - SetErrorRate[2]);
+		}
+		else if (ErrorRate < (SetErrorRate[3] + SetErrorRate[4]) / 2) {
+			KPec = 3;
+		}
+		else if (ErrorRate<SetErrorRate[4]) {
+			KPec = 3;
+			KPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[4] - ErrorRate) / (SetErrorRate[4] - SetErrorRate[3]);
+		}
+		else if (ErrorRate < (SetErrorRate[4] + SetErrorRate[5]) / 2) {
+			KPec = 4;
+		}
+		else if (ErrorRate<SetErrorRate[5]) {
+			KPec = 4;
+			KPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[5] - ErrorRate) / (SetErrorRate[5] - SetErrorRate[4]);
+		}
+		else if (ErrorRate < (SetErrorRate[5] + SetErrorRate[6]) / 2) {
+			KPec = 5;
+		}
+		else if (ErrorRate<SetErrorRate[6]) {
+			KPec = 5;
+			KPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[6] - ErrorRate) / (SetErrorRate[6] - SetErrorRate[5]);
+		}
+	}
+	else if (ErrorRate<SetErrorRate[0]) {
+		KPec = 0;
+		KPec_lishudu = Error_c_lishudu_Max;
+	}
+	else {
+		KPec = 5;
+		KPec_lishudu = 0;
+	} 
+	/*找规则表中的区域*/
+	Temp[0][0] = KPrule[KPec][KPe];
+	Temp[0][1]= KPrule[KPec][KPe+1];
+	Temp[0][2] = KPrule[KPec+1][KPe];
+	Temp[0][3] = KPrule[KPec+1][KPe+1];
+	/*用Error找到的隶属度*/
+	Temp[1][0] = KPe_lishudu;
+	Temp[1][1] = Error_lishudu_Max - KPe_lishudu;
+	Temp[1][2] = KPe_lishudu;
+	Temp[1][3] = Error_lishudu_Max - KPe_lishudu;
+	/*用Error变化率找到的隶属度*/
+	Temp[2][0] = KPec_lishudu;
+	Temp[2][1] = Error_c_lishudu_Max - KPec_lishudu;
+	Temp[2][2] = KPec_lishudu;
+	Temp[2][3] = Error_c_lishudu_Max - KPec_lishudu;
+	/*确定四个点的隶属度(取2隶属度小的给1)*/
+	for (i = 0; i < 4; i++) {
+		if (Temp[1][i]>Temp[2][i]) {
+			Temp[1][i] = Temp[2][i];
+		}
+	}
+	/*小中取大，规则表中同等区域隶属度取大*/
+	if (Temp[0][0] == Temp[0][1]) {
+		if (Temp[1][0] > Temp[1][2])
+			Temp[1][2] = 0;
+		else
+			Temp[1][0] = 0;
+	}
+	if (Temp[0][0] == Temp[0][2]) {
+		if (Temp[1][0] > Temp[1][2])
+			Temp[1][2] = 0;
+		else
+			Temp[1][0] = 0;
+	}
+	if (Temp[0][0] == Temp[0][3]) {
+		if (Temp[1][0] > Temp[1][3])
+			Temp[1][3] = 0;
+		else
+			Temp[1][0] = 0;
+	}
+	if (Temp[0][1] == Temp[0][2]) {
+		if (Temp[1][1] > Temp[1][2])
+			Temp[1][2] = 0;
+		else
+			Temp[1][1] = 0;
+	}
+	if (Temp[0][1] == Temp[0][3]) {
+		if (Temp[1][1] > Temp[1][3])
+			Temp[1][3] = 0;
+		else
+			Temp[1][1] = 0;
+	}
+	if (Temp[0][2] == Temp[0][3]) {
+		if (Temp[1][2] > Temp[1][3])
+			Temp[1][3] = 0;
+		else
+			Temp[1][2] = 0;
+	}
+
+	for (i = 0; i < 4; i++) {
+		Numerator += KPdan[Temp[0][i]]*Temp[1][i] ;
+		Denominator = Temp[1][i];
+	}
+	if (Denominator < 2)
+		Denominator = 1;
+	return Numerator / Denominator;
+}
 /***********************************舵机控制************************************/
 uint16_t Steer_output;
 void Servo_PD( int16_t *AD ) {
 	int max = servo_mid+servo_max;
 	int min = servo_mid+servo_min;
+	
 	int temp=0;
 	temp=AD[1]/20;
 	PAR.Steer_P=P[temp];
+    
     Steer_output = servo_mid + ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
     if( Steer_output > max )   
     	Steer_output = max;
@@ -1498,12 +1730,12 @@ void StopCar()
 
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=233;Max_Valu[1]=228;Max_Valu[2]=232;
+	Max_Valu[0]=230;Max_Valu[1]=234;Max_Valu[2]=230;
 	Noise_Value[0]=25;Noise_Value[1]=23;Noise_Value[2]=25;
 	NormalizePT[0]=51;NormalizePT[1]=53;
-	PAR.Speed_Set = 2600;
-	PAR.Steer_D = 18;
-	PAR.Steer_P = 10;
+	PAR.Speed_Set = 2100;
+	PAR.Steer_D = 24;
+	PAR.Steer_P = 18;
 }
 
 /******************************************************************************/
@@ -1547,6 +1779,7 @@ void main ( void )
     initI2C();         // IIC初始化
     OLED_Init();	   //初始化OLED
     OLED_Clear( 0,7 );
+    Car_Distance=0;
 
     while ( 1 )
     {
@@ -1555,33 +1788,38 @@ void main ( void )
         Position_analyse_front( NormalizePT, Max_Value, AD ); 
         temp=ABS(Error,0);
         Servo_PD( AD );
-/*
+        /*
         if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
+        	
         	OLED_ShowNum( 0,0,AD[0],4,16 );
         	OLED_ShowNum( 40,0,AD[1],4,16 );
         	OLED_ShowNum( 80,0,AD[2],4,16 );
         	
         	OLED_ShowNum( 40,3,ABS(Error,0),4,16 );
-        	OLED_ShowNum( 40,6,ABS(Errorall,0),4,16 );  	
+        	//OLED_ShowNum( 40,6,ABS(ErrorM,0),4,16 );  	
         }
-*/         
-        if( StopCarCount != 2 )
-        {
-	        if( flage_tiaosu )
-	        {	
-	        	if(temp > 40) {
-	        		temp /= 20;
-	        		Speed = PAR.Speed_Set-100*temp;
-	        	}else 
-	        		Speed = PAR.Speed_Set;
-	        	Speed_PID( smartcar_speed, Speed );
-	            flage_tiaosu = 0;
-	        }
+         */     
+        if(ABS(Car_Distance,0)>Distance) {
+        	Speed_PID( smartcar_speed, 0 );	
+        } else {
+        	if( StopCarCount != 2 ) {
+	        	if( flage_tiaosu ) {	
+	        		
+	        		if(temp > 40) {
+	        			temp /= 20;
+	        			Speed = PAR.Speed_Set-100*temp;
+	        		}else 
+	        		
+	        			Speed = PAR.Speed_Set;
+	        		Speed_PID( smartcar_speed, Speed );
+	            	flage_tiaosu = 0;
+	        	}
+        	}
+        	
         }
 
-        sbq( ABS(Error,0), Position, Speed, smartcar_speed );
-    StopCar(); 
-    
+        //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
+    StopCar();     
     }
 	
 }

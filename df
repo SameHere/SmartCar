@@ -1,0 +1,429 @@
+[1mdiff --git a/Sources/main.c b/Sources/main.c[m
+[1mindex 8c5f2d5..3ee2e96 100644[m
+[1m--- a/Sources/main.c[m
+[1m+++ b/Sources/main.c[m
+[36m@@ -64,15 +64,17 @@[m [mstruct motor_PID[m
+ /*************************ÐÂËã·¨¸÷Àà±äÁ¿*****************************/[m
+ [m
+ int Error=0;[m
+[32m+[m[32mint ErrorRate=0;[m
+ int LastError=0;[m
+ uint16_t ADC_flag = 0;[m
+ int16_t ADaverage[6] = {0};		 	    // ²ÉÑù´¦ÀíºóµÄ¾ùÖµ[m
+ int laserror=0;[m
+ uint8_t Position=0;[m
+[32m+[m[32mint Distance=1200;[m
+ uint8_t P[10]={14,13,12,11,9,7,6,5,4,4};[m
+ //uint8_t P[10]={16,15,14,13,12,9,8,7,6,5};[m
+[31m-int Thread=800;[m
+[31m-int thread=6;[m
+[32m+[m[32mint Thread=600;[m
+[32m+[m[32mint thread=7;[m
+ //=====================================================================//[m
+ ////////////////////////°´¼ü¡¢·äÃùÆ÷¡¢Ö¸Ê¾µÆ³õÊ¼»¯//////////////////////[m
+ //====================================================================//[m
+[36m@@ -190,8 +192,8 @@[m [mvoid Show_Me_Data( uint16_t number_test,uint8_t change,uint8_t flag )[m
+             OLED_ShowString( 0,0,"Steer_D:",16 );[m
+             break;[m
+         case  5:[m
+[31m-        	PAR.Lost_Line = number_test;[m
+[31m-        	OLED_ShowString( 0,0,"LostLine:",16 );[m
+[32m+[m[41m        [m	[32mDistance = number_test;[m
+[32m+[m[41m        [m	[32mOLED_ShowString( 0,0,"Distance:",16 );[m
+         	break;[m
+         case  6:[m
+         	PAR.Set_Steer_P = number_test;[m
+[36m@@ -242,10 +244,10 @@[m [mvoid xianshi( void )[m
+         Show_Me_Data( PAR.Speed_Set,50,1 );[m
+         Show_Me_Data( Thread, 25, 7 );[m
+         Show_Me_Data( thread,1,8 );[m
+[31m-[m
+[32m+[m		[32mShow_Me_Data( PAR.Steer_P,1,3 );[m
+         Show_Me_Data( PAR.Steer_D,1,4 );[m
+         [m
+[31m-        //Show_Me_Data( PAR.Lost_Line, 2, 5 );[m
+[32m+[m[32m        Show_Me_Data( Distance, 100, 5 );[m
+         [m
+         //Show_Me_Data( PAR.Set_Steer_P, 1, 6 );[m
+ [m
+[36m@@ -357,22 +359,38 @@[m [mfloat ABS_f( float x,float y )[m
+     else	return( y-x );[m
+ }[m
+ /*-------------------------------------------------------------------*/[m
+[32m+[m[32mint Least_Square_Method(int n, int* data) {[m
+[32m+[m	[32mint i, K=0,sumxy = 0, sumx = 0, sumy = 0, sumxx = 0, Numerator = 0, Denominator;[m
+[32m+[m	[32mfor (i = 0; i < n; i++) {[m
+[32m+[m		[32msumxy += (i*data[i]);[m
+[32m+[m		[32msumx += i;[m
+[32m+[m		[32msumy += data[i];[m
+[32m+[m		[32msumxx += (i*i);[m
+[32m+[m	[32m}[m
+[32m+[m	[32mNumerator  = n*sumxy - sumx*sumy;[m
+[32m+[m	[32mDenominator = n*sumxx - sumx*sumx;[m
+[32m+[m	[32mif (Denominator == 0)[m
+[32m+[m		[32mDenominator = 1;[m
+[32m+[m	[32mK = Numerator / Denominator;[m
+[32m+[m	[32mreturn K;[m
+[32m+[m[32m}[m
+[32m+[m[32m/*-------------------------------------------------------------------*/[m
+ inline int limit(float x,float n) {[m
+[31m-	if(x-n>4)[m
+[31m-		x=n+4;[m
+[31m-	else if(n-x>4)[m
+[31m-		x=n-4;[m
+[32m+[m	[32mif(x-n>9)[m
+[32m+[m		[32mx=n+9;[m
+[32m+[m	[32melse if(n-x>9)[m
+[32m+[m		[32mx=n-9;[m
+ 	[m
+ 	if(x>150)[m
+ 		return 150;[m
+ 	else if(x<-150)[m
+[31m-		return -150;[m
+[32m+[m		[32mreturn -500;[m
+ 	else[m
+ 		return x;[m
+ }[m
+ /*-------------------------------------------------------------------*/[m
+ inline int lost(int a,int b,int error,int16_t *AD) {[m
+[31m-	if((a<10||b<10)&&ABS(a,b)<5||AD[1]<thread) {[m
+[32m+[m	[32mif((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {[m
+ 		if(Position==0)[m
+ 			return -150;[m
+ 		else if(Position==3)[m
+[36m@@ -609,7 +627,7 @@[m [mvoid EMIOS0_CH20_21_isr( void )[m
+     distance_time++;[m
+     Distance_Count++;[m
+ //	SIU.GPDO[PCR38_PC6].R = !SIU.GPDO[PCR38_PC6].R;[m
+[31m-[m
+[32m+[m[41m	[m
+ 	SIU.PCR[PCR66_PE2].R = port_input;[m
+ 	[m
+     	if(SIU.GPDI[PCR66_PE2].R==0)[m
+[36m@@ -1300,6 +1318,7 @@[m [mint MarkError[ARR_MARKERROR_LENGTH] = {0};[m
+ uint8_t  Max_Cross = 1;           //³õÊ¼»¯Öµ¸ø1£¬Ê¹Æä¿ªÊ¼¼ÇÂ¼ÉÏ´ÎµÄÎ»ÖÃ[m
+ uint16_t Max_Old = 0;         //¼ÇÂ¼ÉÏÒ»´ÎµÄ×î´óµç¸ÐÎ»ÖÃ[m
+ uint8_t Position_Old = 1;[m
+[32m+[m[32mint ErrorM=0;[m
+ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )[m
+ {[m
+ [m
+[36m@@ -1368,7 +1387,17 @@[m [mvoid  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )[m
+     Position_Old = Position;[m
+     [m
+ /*-----------------------------¼ÆËãÆ«ÒÆÁ¿----------------------------------*/[m
+[32m+[m	[32m/*[m
+[32m+[m	[32mif(Position==0)[m
+[32m+[m		[32mErrorM=-(200-AD[1])/2;[m
+[32m+[m	[32melse if(Position==3)[m
+[32m+[m		[32mErrorM=(200-AD[1])/2;[m
+[32m+[m	[32melse[m
+[32m+[m		[32mErrorM=0;[m
+[32m+[m	[32m*/[m
+ 	Error1=lost(AD[0],AD[2],limit((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread,(float)laserror),AD);[m
+[32m+[m	[32m//if(ErrorM!=0)[m
+[32m+[m	[32m//	Error1=(thread*Error1+(10-thread)*ErrorM)/10;[m
+ 	laserror=Error1;[m
+     Error =  Error1;[m
+ /************************************Error´æ´¢************************************************/[m
+[36m@@ -1381,15 +1410,218 @@[m [mvoid  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )[m
+     }[m
+     Errorall/=10;[m
+ }[m
+[32m+[m[32m/******************************Ä£ºý¿ØÖÆÏà¹Ø±äÁ¿*************************************/[m
+[32m+[m[32mint KPe=0,KPe_lishudu=0,KPec=0,KPec_lishudu=0;[m
+[32m+[m[32mint Error_lishudu_Max = 200;[m
+[32m+[m[32mint Error_c_lishudu_Max = 200;[m
+[32m+[m[32mint Temp[4][4]={0};[m
+[32m+[m[32mint SetError[7]={-85 ,  -65 , -40,  0 , 40 ,  65 , 85};[m
+[32m+[m[32mint SetErrorRate[7]={-25 , -19 , -10 , 0 , 10 , 19 , 25};[m
+[32m+[m[32mint KPdan[7] = { 95, 80, 68, 28, 68, 80, 95 };[m
+[32m+[m[32mint KPrule[7][7] = {[m[41m 	[m
+[32m+[m	[32m//Îó²î±ä»¯ÂÊ  0---1---2---3---4---5---6      //Îó²î[m[41m                                   [m
+[32m+[m	[32m0, 0, 0, 0, 1, 2, 3,    //0  -3[m
+[32m+[m	[32m0, 0, 0, 1, 2, 3, 3,    //1  -2[m[41m [m
+[32m+[m	[32m0, 1, 1, 2, 3, 3, 4,    //2  -1[m[41m   [m
+[32m+[m	[32m1, 2, 2, 3, 4, 4, 5,    //3   0[m[41m  [m
+[32m+[m	[32m2, 3, 3, 4, 5, 5, 6,    //4   1[m[41m [m
+[32m+[m	[32m3, 3, 4, 5, 6, 6, 6,    //5   2[m[41m  [m
+[32m+[m	[32m3, 4, 5, 6, 6, 6, 6      //6   3[m[41m  [m
+[32m+[m[32m};			//KP¹æÔò±í[m
+[32m+[m[32m/******************************»ñµÃPÖµ*********************************************************/[m
+[32m+[m[32mint FuzzyKP() {[m
+[32m+[m	[32mint Numerator=0,Denominator=0,i=0;[m
+[32m+[m[41m	[m
+[32m+[m	[32m/******************************ÓÃErrorÇóKP*************************************/[m
+[32m+[m	[32mif (Error >= SetError[0] && Error < SetError[6]) {[m
+[32m+[m		[32mif (Error < (SetError[0] + SetError[1]) / 2) {[m
+[32m+[m			[32mKPe = 0;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[0]) / (SetError[1] - SetError[0]);[m
+[32m+[m		[32m}else if (Error<SetError[1]){[m
+[32m+[m			[32mKPe = 0;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max * (SetError[1] - Error) / (SetError[1] - SetError[0]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error < (SetError[1] + SetError[2]) / 2) {[m
+[32m+[m			[32mKPe = 1;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[1]) / (SetError[2] - SetError[1]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error<SetError[2]) {[m
+[32m+[m			[32mKPe = 1;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max * (SetError[2] - Error) / (SetError[2] - SetError[1]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error < (SetError[2] + SetError[3]) / 2) {[m
+[32m+[m			[32mKPe = 2;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[2]) / (SetError[3] - SetError[2]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error<SetError[3]) {[m
+[32m+[m			[32mKPe = 2;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max * (SetError[3] - Error) / (SetError[3] - SetError[2]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error < (SetError[3] + SetError[4]) / 2) {[m
+[32m+[m			[32mKPe = 3;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[3]) / (SetError[4] - SetError[3]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error<SetError[4]) {[m
+[32m+[m			[32mKPe = 3;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max * (SetError[4] - Error) / (SetError[4] - SetError[3]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error < (SetError[4] + SetError[5]) / 2) {[m
+[32m+[m			[32mKPe = 4;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[4]) / (SetError[5] - SetError[4]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error<SetError[5]) {[m
+[32m+[m			[32mKPe = 4;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max * (SetError[5] - Error) / (SetError[5] - SetError[4]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error < (SetError[5] + SetError[6]) / 2) {[m
+[32m+[m			[32mKPe = 5;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[5]) / (SetError[6] - SetError[5]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (Error<SetError[6]) {[m
+[32m+[m			[32mKPe = 5;[m
+[32m+[m			[32mKPe_lishudu = Error_lishudu_Max * (SetError[6] - Error) / (SetError[6] - SetError[5]);[m
+[32m+[m		[32m}[m
+[32m+[m	[32m}else if (Error<SetError[0]) {[m
+[32m+[m		[32mKPe = 0;[m
+[32m+[m		[32mKPe_lishudu = Error_lishudu_Max;[m
+[32m+[m	[32m}else {[m
+[32m+[m		[32mKPe = 5;[m
+[32m+[m		[32mKPe_lishudu = 0;[m
+[32m+[m	[32m}[m
+ [m
+[32m+[m	[32m/******************************ÓÃError±ä»¯ÂÊÇóKPec*************************************/[m
+[32m+[m	[32m/******************************ÓÃError±ä»¯ÂÊÇó*************************************/[m
+[32m+[m	[32m/******************************ÓÃError±ä»¯ÂÊÇó*************************************/[m
+[32m+[m	[32mif (ErrorRate >= SetErrorRate[0] && ErrorRate < SetErrorRate[6]) {[m
+[32m+[m		[32mif (ErrorRate < (SetErrorRate[0] + SetErrorRate[1]) / 2) {[m
+[32m+[m			[32mKPec = 0;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max - Error_c_lishudu_Max * (ErrorRate - SetErrorRate[0]) / (SetErrorRate[1] - SetErrorRate[0]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate<SetErrorRate[1]){[m
+[32m+[m			[32mKPec = 0;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[1] - ErrorRate) / (SetErrorRate[1] - SetErrorRate[0]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate < (SetErrorRate[1] + SetErrorRate[2]) / 2) {[m
+[32m+[m			[32mKPec = 1;[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate<SetErrorRate[2]) {[m
+[32m+[m			[32mKPec = 1;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[2] - ErrorRate) / (SetErrorRate[2] - SetErrorRate[1]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate < (SetErrorRate[2] + SetErrorRate[3]) / 2) {[m
+[32m+[m			[32mKPec = 2;[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate<SetErrorRate[3]) {[m
+[32m+[m			[32mKPec = 2;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[3] - ErrorRate) / (SetErrorRate[3] - SetErrorRate[2]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate < (SetErrorRate[3] + SetErrorRate[4]) / 2) {[m
+[32m+[m			[32mKPec = 3;[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate<SetErrorRate[4]) {[m
+[32m+[m			[32mKPec = 3;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[4] - ErrorRate) / (SetErrorRate[4] - SetErrorRate[3]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate < (SetErrorRate[4] + SetErrorRate[5]) / 2) {[m
+[32m+[m			[32mKPec = 4;[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate<SetErrorRate[5]) {[m
+[32m+[m			[32mKPec = 4;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[5] - ErrorRate) / (SetErrorRate[5] - SetErrorRate[4]);[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate < (SetErrorRate[5] + SetErrorRate[6]) / 2) {[m
+[32m+[m			[32mKPec = 5;[m
+[32m+[m		[32m}[m
+[32m+[m		[32melse if (ErrorRate<SetErrorRate[6]) {[m
+[32m+[m			[32mKPec = 5;[m
+[32m+[m			[32mKPec_lishudu = Error_c_lishudu_Max * (SetErrorRate[6] - ErrorRate) / (SetErrorRate[6] - SetErrorRate[5]);[m
+[32m+[m		[32m}[m
+[32m+[m	[32m}[m
+[32m+[m	[32melse if (ErrorRate<SetErrorRate[0]) {[m
+[32m+[m		[32mKPec = 0;[m
+[32m+[m		[32mKPec_lishudu = Error_c_lishudu_Max;[m
+[32m+[m	[32m}[m
+[32m+[m	[32melse {[m
+[32m+[m		[32mKPec = 5;[m
+[32m+[m		[32mKPec_lishudu = 0;[m
+[32m+[m	[32m}[m[41m [m
+[32m+[m	[32m/*ÕÒ¹æÔò±íÖÐµÄÇøÓò*/[m
+[32m+[m	[32mTemp[0][0] = KPrule[KPec][KPe];[m
+[32m+[m	[32mTemp[0][1]= KPrule[KPec][KPe+1];[m
+[32m+[m	[32mTemp[0][2] = KPrule[KPec+1][KPe];[m
+[32m+[m	[32mTemp[0][3] = KPrule[KPec+1][KPe+1];[m
+[32m+[m	[32m/*ÓÃErrorÕÒµ½µÄÁ¥Êô¶È*/[m
+[32m+[m	[32mTemp[1][0] = KPe_lishudu;[m
+[32m+[m	[32mTemp[1][1] = Error_lishudu_Max - KPe_lishudu;[m
+[32m+[m	[32mTemp[1][2] = KPe_lishudu;[m
+[32m+[m	[32mTemp[1][3] = Error_lishudu_Max - KPe_lishudu;[m
+[32m+[m	[32m/*ÓÃError±ä»¯ÂÊÕÒµ½µÄÁ¥Êô¶È*/[m
+[32m+[m	[32mTemp[2][0] = KPec_lishudu;[m
+[32m+[m	[32mTemp[2][1] = Error_c_lishudu_Max - KPec_lishudu;[m
+[32m+[m	[32mTemp[2][2] = KPec_lishudu;[m
+[32m+[m	[32mTemp[2][3] = Error_c_lishudu_Max - KPec_lishudu;[m
+[32m+[m	[32m/*È·¶¨ËÄ¸öµãµÄÁ¥Êô¶È(È¡2Á¥Êô¶ÈÐ¡µÄ¸ø1)*/[m
+[32m+[m	[32mfor (i = 0; i < 4; i++) {[m
+[32m+[m		[32mif (Temp[1][i]>Temp[2][i]) {[m
+[32m+[m			[32mTemp[1][i] = Temp[2][i];[m
+[32m+[m		[32m}[m
+[32m+[m	[32m}[m
+[32m+[m	[32m/*Ð¡ÖÐÈ¡´ó£¬¹æÔò±íÖÐÍ¬µÈÇøÓòÁ¥Êô¶ÈÈ¡´ó*/[m
+[32m+[m	[32mif (Temp[0][0] == Temp[0][1]) {[m
+[32m+[m		[32mif (Temp[1][0] > Temp[1][2])[m
+[32m+[m			[32mTemp[1][2] = 0;[m
+[32m+[m		[32melse[m
+[32m+[m			[32mTemp[1][0] = 0;[m
+[32m+[m	[32m}[m
+[32m+[m	[32mif (Temp[0][0] == Temp[0][2]) {[m
+[32m+[m		[32mif (Temp[1][0] > Temp[1][2])[m
+[32m+[m			[32mTemp[1][2] = 0;[m
+[32m+[m		[32melse[m
+[32m+[m			[32mTemp[1][0] = 0;[m
+[32m+[m	[32m}[m
+[32m+[m	[32mif (Temp[0][0] == Temp[0][3]) {[m
+[32m+[m		[32mif (Temp[1][0] > Temp[1][3])[m
+[32m+[m			[32mTemp[1][3] = 0;[m
+[32m+[m		[32melse[m
+[32m+[m			[32mTemp[1][0] = 0;[m
+[32m+[m	[32m}[m
+[32m+[m	[32mif (Temp[0][1] == Temp[0][2]) {[m
+[32m+[m		[32mif (Temp[1][1] > Temp[1][2])[m
+[32m+[m			[32mTemp[1][2] = 0;[m
+[32m+[m		[32melse[m
+[32m+[m			[32mTemp[1][1] = 0;[m
+[32m+[m	[32m}[m
+[32m+[m	[32mif (Temp[0][1] == Temp[0][3]) {[m
+[32m+[m		[32mif (Temp[1][1] > Temp[1][3])[m
+[32m+[m			[32mTemp[1][3] = 0;[m
+[32m+[m		[32melse[m
+[32m+[m			[32mTemp[1][1] = 0;[m
+[32m+[m	[32m}[m
+[32m+[m	[32mif (Temp[0][2] == Temp[0][3]) {[m
+[32m+[m		[32mif (Temp[1][2] > Temp[1][3])[m
+[32m+[m			[32mTemp[1][3] = 0;[m
+[32m+[m		[32melse[m
+[32m+[m			[32mTemp[1][2] = 0;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mfor (i = 0; i < 4; i++) {[m
+[32m+[m		[32mNumerator += KPdan[Temp[0][i]]*Temp[1][i] ;[m
+[32m+[m		[32mDenominator = Temp[1][i];[m
+[32m+[m	[32m}[m
+[32m+[m	[32mif (Denominator < 2)[m
+[32m+[m		[32mDenominator = 1;[m
+[32m+[m	[32mreturn Numerator / Denominator;[m
+[32m+[m[32m}[m
+ /***********************************¶æ»ú¿ØÖÆ************************************/[m
+ uint16_t Steer_output;[m
+ void Servo_PD( int16_t *AD ) {[m
+ 	int max = servo_mid+servo_max;[m
+ 	int min = servo_mid+servo_min;[m
+[32m+[m[41m	[m
+ 	int temp=0;[m
+ 	temp=AD[1]/20;[m
+ 	PAR.Steer_P=P[temp];[m
+[32m+[m[41m    [m
+     Steer_output = servo_mid + ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );[m
+     if( Steer_output > max )   [m
+     	Steer_output = max;[m
+[36m@@ -1498,12 +1730,12 @@[m [mvoid StopCar()[m
+ [m
+ void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )[m
+ {[m
+[31m-	Max_Valu[0]=233;Max_Valu[1]=228;Max_Valu[2]=232;[m
+[32m+[m	[32mMax_Valu[0]=230;Max_Valu[1]=234;Max_Valu[2]=230;[m
+ 	Noise_Value[0]=25;Noise_Value[1]=23;Noise_Value[2]=25;[m
+ 	NormalizePT[0]=51;NormalizePT[1]=53;[m
+[31m-	PAR.Speed_Set = 2600;[m
+[31m-	PAR.Steer_D = 18;[m
+[31m-	PAR.Steer_P = 10;[m
+[32m+[m	[32mPAR.Speed_Set = 2100;[m
+[32m+[m	[32mPAR.Steer_D = 24;[m
+[32m+[m	[32mPAR.Steer_P = 18;[m
+ }[m
+ [m
+ /******************************************************************************/[m
+[36m@@ -1547,6 +1779,7 @@[m [mvoid main ( void )[m
+     initI2C();         // IIC³õÊ¼»¯[m
+     OLED_Init();	   //³õÊ¼»¯OLED[m
+     OLED_Clear( 0,7 );[m
+[32m+[m[32m    Car_Distance=0;[m
+ [m
+     while ( 1 )[m
+     {[m
+[36m@@ -1555,33 +1788,38 @@[m [mvoid main ( void )[m
+         Position_analyse_front( NormalizePT, Max_Value, AD ); [m
+         temp=ABS(Error,0);[m
+         Servo_PD( AD );[m
+[31m-/*[m
+[32m+[m[32m        /*[m
+         if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {[m
+[32m+[m[41m        	[m
+         	OLED_ShowNum( 0,0,AD[0],4,16 );[m
+         	OLED_ShowNum( 40,0,AD[1],4,16 );[m
+         	OLED_ShowNum( 80,0,AD[2],4,16 );[m
+         	[m
+         	OLED_ShowNum( 40,3,ABS(Error,0),4,16 );[m
+[31m-        	OLED_ShowNum( 40,6,ABS(Errorall,0),4,16 );  	[m
+[32m+[m[41m        [m	[32m//OLED_ShowNum( 40,6,ABS(ErrorM,0),4,16 );[m[41m  	[m
+         }[m
+[31m-*/         [m
+[31m-        if( StopCarCount != 2 )[m
+[31m-        {[m
+[31m-	        if( flage_tiaosu )[m
+[31m-	        {	[m
+[31m-	        	if(temp > 40) {[m
+[31m-	        		temp /= 20;[m
+[31m-	        		Speed = PAR.Speed_Set-100*temp;[m
+[31m-	        	}else [m
+[31m-	        		Speed = PAR.Speed_Set;[m
+[31m-	        	Speed_PID( smartcar_speed, Speed );[m
+[31m-	            flage_tiaosu = 0;[m
+[31m-	        }[m
+[32m+[m[32m         */[m[41m     [m
+[32m+[m[32m        if(ABS(Car_Distance,0)>Distance) {[m
+[32m+[m[41m        [m	[32mSpeed_PID( smartcar_speed, 0 );[m[41m	[m
+[32m+[m[32m        } else {[m
+[32m+[m[41m        [m	[32mif( StopCarCount != 2 ) {[m
+[32m+[m	[41m        [m	[32mif( flage_tiaosu ) {[m[41m	[m
+[32m+[m[41m	        		[m
+[32m+[m	[41m        [m		[32mif(temp > 40) {[m
+[32m+[m	[41m        [m			[32mtemp /= 20;[m
+[32m+[m	[41m        [m			[32mSpeed = PAR.Speed_Set-100*temp;[m
+[32m+[m	[41m        [m		[32m}else[m[41m [m
+[32m+[m[41m	        		[m
+[32m+[m	[41m        [m			[32mSpeed = PAR.Speed_Set;[m
+[32m+[m	[41m        [m		[32mSpeed_PID( smartcar_speed, Speed );[m
+[32m+[m	[41m            [m	[32mflage_tiaosu = 0;[m
+[32m+[m	[41m        [m	[32m}[m
+[32m+[m[41m        [m	[32m}[m
+[32m+[m[41m        	[m
+         }[m
+ [m
+[31m-        sbq( ABS(Error,0), Position, Speed, smartcar_speed );[m
+[31m-    StopCar(); [m
+[31m-    [m
+[32m+[m[32m        //sbq( ABS(Error,0), Position, Speed, smartcar_speed );[m
+[32m+[m[32m    StopCar();[m[41m     [m
+     }[m
+ 	[m
+ }[m
