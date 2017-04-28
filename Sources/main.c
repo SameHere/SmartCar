@@ -390,6 +390,19 @@ inline int limit(float x,float n) {
 		return x;
 }
 /*-------------------------------------------------------------------*/
+/*
+int dir=0;
+inline lostJudge(int a,int b) {
+	int min=10;
+	if(AD[1]<=min) {
+		if(AD[0]>AD[2])
+		
+	} else if(AD[1]>=min) {
+		
+	}
+	
+}*/
+/*-------------------------------------------------------------------*/
 inline int lost(int a,int b,int error,int16_t *AD) {
 	if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
 		/*
@@ -1616,9 +1629,9 @@ int FuzzyKP() {
 		Denominator = 1;
 	return Numerator / Denominator;
 }
-/***********************************舵机控制************************************/
+/***********************************舵机和速度控制控制************************************/
 uint16_t Steer_output;
-void Servo_PD( int16_t *AD ) {
+inline void Servo_PDwithSpeed( int16_t *AD ) {
 	int max = servo_mid+servo_max;
 	int min = servo_mid+servo_min;
 	
@@ -1632,81 +1645,12 @@ void Servo_PD( int16_t *AD ) {
     if( Steer_output < min )   
     	Steer_output = min;
     servo_pwm = Steer_output;
-}
-/**********************************调试servo_pwm的值与电感偏移量的关系***********************************/
-
-void Debug_Servo_pwm( int16_t *Max_Value, int16_t *AD, int16_t *NormalizePT )
-{
-	delay_ms( 100 );      //显示屏初始化需要一段延时 否则无法显示
-    initI2C();            // IIC初始化
-    OLED_Init();	      //初始化OLED
-    OLED_Clear( 0,7 );
-	
-    OLED_ShowString( 8, 6,"-",16 );
-    OLED_ShowString( 48,6,"+",16 );	
     
-    servo_pwm = servo_mid;
-    
-    while( 1 )
-    {
-        decrease_port_config= port_input;   //按键设置为输入
-        increase_port_config = port_input;
-        ok_port_config = port_input;
-        
-        Sampling( ); 
-        
-        OLED_ShowNum( 32,3,servo_pwm,5,16 );
-        if( decrease_port_in == LOW )
-        {
-            while( decrease_port_in == LOW )
-            {
-            	if( ok_port_in == LOW )
-        		{
-        			delay_ms( 100 );
-        			while( ok_port_in == LOW );
-        			servo_pwm -= 100;
-        		}
-            }
-           	servo_pwm -= 10;                 //按 - 每次减10
-        }
-        
-        if( increase_port_in == LOW )
-        {
-            while( increase_port_in == LOW )
-            {
-            	if( ok_port_in == LOW )
-        		{
-        			delay_ms( 100 );
-        			while( ok_port_in == LOW );
-        			servo_pwm += 100;
-        		}
-            }
-           	servo_pwm += 10;                //按 + 每次加10
-        }
-        
-        if( ok_port_in == LOW )               //先按OK再按+即为为增加100，只按OK发送数据
-        {
-        	while( ok_port_in == LOW )
-        	{
-        		if( increase_port_in == LOW )
-        		{
-        			delay_ms( 100 );
-        			while( increase_port_in == LOW );
-//        			sbq( ADaverage[0], ADaverage[1], ADaverage[2], servo_pwm );	
-        		}
-        		
-        		if( decrease_port_in == LOW )
-        		{
-        			delay_ms( 100 );
-        			while( decrease_port_in == LOW );
-//        			sbq( ADaverage[0], ADaverage[1], ADaverage[2], servo_pwm );
-        		}
-        	}
-        	sbq( ADaverage[0], ADaverage[1], ADaverage[2], servo_pwm );
-        }
-    }
+    if( flage_tiaosu ) {	
+	   Speed_PID( smartcar_speed, PAR.Speed_Set );
+	   flage_tiaosu = 0;
+	}
 }
-
 //********************停车检测*************************//
 #define   PARK_CAR   SIU.GPDI[PCR50_PD2].R
 #define   PARK_CONFIGURE  SIU.PCR[PCR50_PD2].R
@@ -1732,6 +1676,38 @@ void StopCar()
 }
 
 
+
+uint8_t flag=0,ju=0,ju1=0;
+/*****************************调试中选择LED是否显示**************************************/
+void DisplaySwitch(int16_t *AD) {
+	if ( ok_port_in == LOW ) {
+        	flag++;
+        	flag=flag%2;
+    }    
+    if(flag==0) {
+       	if(ju==0) {
+       		OLED_Init();
+       		delay_ms( 1000 );
+       		ju=1;
+       		ju1==0;
+        }
+       	if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
+       		OLED_ShowNum( 0,0,AD[0],4,16 );
+    		OLED_ShowNum( 40,0,AD[1],4,16 );
+       		OLED_ShowNum( 80,0,AD[2],4,16 );
+       		OLED_ShowNum( 40,3,ABS(Error,0),4,16 );
+      		OLED_ShowNum( 40,6,ABS(ErrorM,0),4,16 );  	
+       	}        		
+    } else {
+    	if(ju1==0) {
+       		OLED_Clear(0,7);
+    		delay_ms( 1000 );
+       		ju=0;
+       		ju1=1;    		
+    	}
+    }
+}
+/*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
 	Max_Valu[0]=230;Max_Valu[1]=234;Max_Valu[2]=230;
@@ -1741,16 +1717,13 @@ void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 	PAR.Steer_D = 24;
 	PAR.Steer_P = 18;
 }
-
-/******************************************************************************/
+/*******************************主函数*******************************************/
 void main ( void )
 {
 	int16_t NormalizePT[2]={0};
 	int16_t AD[6]={0};
 	int16_t Noise_Value[6]={0};         //底噪值
 	int16_t Max_Value[6]  ={0};
-	int Speed = 0;
-	int temp=0;
     core_config();
     disableIrq();
     initSCI();
@@ -1789,36 +1762,10 @@ void main ( void )
     	Sampling( );
 		Normalization( ADaverage, Noise_Value, Max_Value, AD, 6 );
         Position_analyse_front( NormalizePT, Max_Value, AD ); 
-        temp=ABS(Error,0);
-        Servo_PD( AD );
-        if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-        
-        	OLED_ShowNum( 0,0,AD[0],4,16 );
-        	OLED_ShowNum( 40,0,AD[1],4,16 );
-        	OLED_ShowNum( 80,0,AD[2],4,16 );
-        	
-        	OLED_ShowNum( 40,3,ABS(Error,0),4,16 );
-        	//OLED_ShowNum( 40,6,ABS(ErrorM,0),4,16 );  	
-        }     
-        if(ABS(Car_Distance,0)>Distance) {
-        	Speed_PID( smartcar_speed, 0 );	
-        } else {
-        	if( StopCarCount != 2 ) {
-	        	if( flage_tiaosu ) {	
-	        		
-	        		if(temp > 40) {
-	        			temp /= 20;
-	        			Speed = PAR.Speed_Set-100*temp;
-	        		}else 
-	        			Speed = PAR.Speed_Set;
-	        		Speed_PID( smartcar_speed, Speed );
-	            	flage_tiaosu = 0;
-	        	}
-        	}
-        	
-        }
+        Servo_PDwithSpeed( AD );
+        DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
-    StopCar();     
+    	//StopCar();     
     }	
 }
 
