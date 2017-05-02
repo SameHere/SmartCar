@@ -380,40 +380,40 @@ inline int limit(float x,float n) {
 		x=n+9;
 	else if(n-x>9)
 		x=n-9;
-	/*
-	if(x>150)
-		return 150;
-	else if(x<-150)
-		return -150;
-	else
-	*/
-		return x;
+	return x;
 }
 /*-------------------------------------------------------------------*/
-/*
-int dir=0;
-inline lostJudge(int a,int b) {
-	int min=10;
-	if(AD[1]<=min) {
-		if(AD[0]>AD[2])
-		
-	} else if(AD[1]>=min) {
-		
+inline int FindMax(int16_t* AD,int n) {
+	int max=0,i=0;
+	for(i=0;i<n;i++) {
+		if(AD[i]>=max)
+			max=AD[i];
 	}
-	
-}*/
+	return max;
+}
 /*-------------------------------------------------------------------*/
-inline int lost(int a,int b,int error,int16_t *AD) {
-	if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
-		/*
-		if(Position==0)
-			return -150;
-		else if(Position==3)
-			return 150;
-		*/
-		return laserror;
-	}else	
-		return error;
+int dir=0;
+inline int lost(int error,int16_t *AD) {
+	int min=10,max=40,i;
+	if(dir!=0) {
+		if(FindMax(AD,3)<=8&&ABS(AD[0],AD[2])<6)
+			error=laserror;
+		if(dir==1&&AD[0]>=AD[2])
+			error=laserror;
+		if(dir==-1&&AD[2]>=AD[0])
+			error=laserror;
+	}
+	if(AD[1]<min&&dir==0) {
+		if(error<0)
+			dir=-1;
+		else if(error>0)
+			dir=1;
+	} else if(AD[1]>max) {
+		dir=0;	
+	}
+	return error;
+	//if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
+
 }
 /*-------------------------------------------------------------------*/
 int8_t FuHao( int16_t x )
@@ -1412,7 +1412,7 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	else
 		ErrorM=0;
 	*/
-	Error1=lost(AD[0],AD[2],limit((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread,(float)laserror),AD);
+	Error1=lost(limit((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread,(float)laserror),AD);
 	//if(ErrorM!=0)
 	//	Error1=(thread*Error1+(10-thread)*ErrorM)/10;
 	laserror=Error1;
