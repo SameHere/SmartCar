@@ -26,9 +26,11 @@ void Show_Me_Data( uint16_t number_test,uint8_t change,uint8_t flag );
 /*---------------------------------------------------------------------------------------*/
 #define   servo_pwm      EMIOS_0.CH[21].CBDR.R     //Maximal value is 13333
 #define   motor_pwm    	 EMIOS_0.CH[13].CBDR.R     //Maximal value is 8000
-#define   servo_max     1200//右转极限
-#define   servo_min     -1200//左转极限
-#define   servo_mid     5960
+#define   servo_max     	1200//右转极限
+#define   servo_min     	-1200//左转极限
+#define   servo_mid     	5960
+#define Error_lishudu_Max  	200
+#define Error_c_lishudu_Max 200
 /*========================================================================================*/
 
 uint16_t ABS( int x,int y );
@@ -1428,14 +1430,22 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     Errorall/=10;
 }
 /******************************模糊控制相关变量*************************************/
-int KPe=0,KPe_lishudu=0,KPec=0,KPec_lishudu=0;
-int Error_lishudu_Max = 200;
-int Error_c_lishudu_Max = 200;
-int Temp[4][4]={0};
+
 int SetError[7]={-85 ,  -65 , -40,  0 , 40 ,  65 , 85};
 int SetErrorRate[7]={-25 , -19 , -10 , 0 , 10 , 19 , 25};
 int KPdan[7] = { 95, 80, 68, 28, 68, 80, 95 };
+int KDdan[7] = { 152,140,128, 95, 128, 140,152 };
 int KPrule[7][7] = { 	
+	//误差变化率  0---1---2---3---4---5---6      //误差                                   
+	0, 0, 0, 0, 1, 2, 3,    //0  -3
+	0, 0, 0, 1, 2, 3, 3,    //1  -2 
+	0, 1, 1, 2, 3, 3, 4,    //2  -1   
+	1, 2, 2, 3, 4, 4, 5,    //3   0  
+	2, 3, 3, 4, 5, 5, 6,    //4   1 
+	3, 3, 4, 5, 6, 6, 6,    //5   2  
+	3, 4, 5, 6, 6, 6, 6      //6   3  
+};			//KP规则表
+int KDrule[7][7] = { 	
 	//误差变化率  0---1---2---3---4---5---6      //误差                                   
 	0, 0, 0, 0, 1, 2, 3,    //0  -3
 	0, 0, 0, 1, 2, 3, 3,    //1  -2 
@@ -1448,7 +1458,8 @@ int KPrule[7][7] = {
 /******************************获得P值*********************************************************/
 int FuzzyKP() {
 	int Numerator=0,Denominator=0,i=0;
-	
+	int KPe=0,KPe_lishudu=0,KPec=0,KPec_lishudu=0;
+	int Temp[4][4]={0};
 	/******************************用Error求KP*************************************/
 	if (Error >= SetError[0] && Error < SetError[6]) {
 		if (Error < (SetError[0] + SetError[1]) / 2) {
@@ -1629,6 +1640,195 @@ int FuzzyKP() {
 		Denominator = 1;
 	return Numerator / Denominator;
 }
+/******************************获得D值*********************************************************/
+int FuzzyKD() {
+	int Numerator = 0, Denominator = 0, i = 0;
+	int KDe = 0, KDe_lishudu = 0, KDec = 0, KDec_lishudu = 0;
+	int Temp[4][4] = { 0 };
+	/******************************用Error求KD*************************************/
+	if (Error >= SetError[0] && Error < SetError[6]) {
+		if (Error < (SetError[0] + SetError[1]) / 2) {
+			KDe = 0;
+			KDe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[0]) / (SetError[1] - SetError[0]);
+		}
+		else if (Error<SetError[1]){
+			KDe = 0;
+			KDe_lishudu = Error_lishudu_Max * (SetError[1] - Error) / (SetError[1] - SetError[0]);
+		}
+		else if (Error < (SetError[1] + SetError[2]) / 2) {
+			KDe = 1;
+			KDe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[1]) / (SetError[2] - SetError[1]);
+		}
+		else if (Error<SetError[2]) {
+			KDe = 1;
+			KDe_lishudu = Error_lishudu_Max * (SetError[2] - Error) / (SetError[2] - SetError[1]);
+		}
+		else if (Error < (SetError[2] + SetError[3]) / 2) {
+			KDe = 2;
+			KDe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[2]) / (SetError[3] - SetError[2]);
+		}
+		else if (Error<SetError[3]) {
+			KDe = 2;
+			KDe_lishudu = Error_lishudu_Max * (SetError[3] - Error) / (SetError[3] - SetError[2]);
+		}
+		else if (Error < (SetError[3] + SetError[4]) / 2) {
+			KDe = 3;
+			KDe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[3]) / (SetError[4] - SetError[3]);
+		}
+		else if (Error<SetError[4]) {
+			KDe = 3;
+			KDe_lishudu = Error_lishudu_Max * (SetError[4] - Error) / (SetError[4] - SetError[3]);
+		}
+		else if (Error < (SetError[4] + SetError[5]) / 2) {
+			KDe = 4;
+			KDe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[4]) / (SetError[5] - SetError[4]);
+		}
+		else if (Error<SetError[5]) {
+			KDe = 4;
+			KDe_lishudu = Error_lishudu_Max * (SetError[5] - Error) / (SetError[5] - SetError[4]);
+		}
+		else if (Error < (SetError[5] + SetError[6]) / 2) {
+			KDe = 5;
+			KDe_lishudu = Error_lishudu_Max - Error_lishudu_Max * (Error - SetError[5]) / (SetError[6] - SetError[5]);
+		}
+		else if (Error<SetError[6]) {
+			KDe = 5;
+			KDe_lishudu = Error_lishudu_Max * (SetError[6] - Error) / (SetError[6] - SetError[5]);
+		}
+	}
+	else if (Error<SetError[0]) {
+		KDe = 0;
+		KDe_lishudu = Error_lishudu_Max;
+	}
+	else {
+		KDe = 5;
+		KDe_lishudu = 0;
+	}
+
+	/******************************用Error变化率求KDec*************************************/
+	/******************************用Error变化率求*************************************/
+	/******************************用Error变化率求*************************************/
+	if (ErrorRate >= SetErrorRate[0] && ErrorRate < SetErrorRate[6]) {
+		if (ErrorRate < (SetErrorRate[0] + SetErrorRate[1]) / 2) {
+			KDec = 0;
+			KDec_lishudu = Error_c_lishudu_Max - Error_c_lishudu_Max * (ErrorRate - SetErrorRate[0]) / (SetErrorRate[1] - SetErrorRate[0]);
+		}
+		else if (ErrorRate<SetErrorRate[1]){
+			KDec = 0;
+			KDec_lishudu = Error_c_lishudu_Max * (SetErrorRate[1] - ErrorRate) / (SetErrorRate[1] - SetErrorRate[0]);
+		}
+		else if (ErrorRate < (SetErrorRate[1] + SetErrorRate[2]) / 2) {
+			KDec = 1;
+		}
+		else if (ErrorRate<SetErrorRate[2]) {
+			KDec = 1;
+			KDec_lishudu = Error_c_lishudu_Max * (SetErrorRate[2] - ErrorRate) / (SetErrorRate[2] - SetErrorRate[1]);
+		}
+		else if (ErrorRate < (SetErrorRate[2] + SetErrorRate[3]) / 2) {
+			KDec = 2;
+		}
+		else if (ErrorRate<SetErrorRate[3]) {
+			KDec = 2;
+			KDec_lishudu = Error_c_lishudu_Max * (SetErrorRate[3] - ErrorRate) / (SetErrorRate[3] - SetErrorRate[2]);
+		}
+		else if (ErrorRate < (SetErrorRate[3] + SetErrorRate[4]) / 2) {
+			KDec = 3;
+		}
+		else if (ErrorRate<SetErrorRate[4]) {
+			KDec = 3;
+			KDec_lishudu = Error_c_lishudu_Max * (SetErrorRate[4] - ErrorRate) / (SetErrorRate[4] - SetErrorRate[3]);
+		}
+		else if (ErrorRate < (SetErrorRate[4] + SetErrorRate[5]) / 2) {
+			KDec = 4;
+		}
+		else if (ErrorRate<SetErrorRate[5]) {
+			KDec = 4;
+			KDec_lishudu = Error_c_lishudu_Max * (SetErrorRate[5] - ErrorRate) / (SetErrorRate[5] - SetErrorRate[4]);
+		}
+		else if (ErrorRate < (SetErrorRate[5] + SetErrorRate[6]) / 2) {
+			KDec = 5;
+		}
+		else if (ErrorRate<SetErrorRate[6]) {
+			KDec = 5;
+			KDec_lishudu = Error_c_lishudu_Max * (SetErrorRate[6] - ErrorRate) / (SetErrorRate[6] - SetErrorRate[5]);
+		}
+	}
+	else if (ErrorRate<SetErrorRate[0]) {
+		KDec = 0;
+		KDec_lishudu = Error_c_lishudu_Max;
+	}
+	else {
+		KDec = 5;
+		KDec_lishudu = 0;
+	}
+	/*找规则表中的区域*/
+	Temp[0][0] = KDrule[KDec][KDe];
+	Temp[0][1] = KDrule[KDec][KDe + 1];
+	Temp[0][2] = KDrule[KDec + 1][KDe];
+	Temp[0][3] = KDrule[KDec + 1][KDe + 1];
+	/*用Error找到的隶属度*/
+	Temp[1][0] = KDe_lishudu;
+	Temp[1][1] = Error_lishudu_Max - KDe_lishudu;
+	Temp[1][2] = KDe_lishudu;
+	Temp[1][3] = Error_lishudu_Max - KDe_lishudu;
+	/*用Error变化率找到的隶属度*/
+	Temp[2][0] = KDec_lishudu;
+	Temp[2][1] = Error_c_lishudu_Max - KDec_lishudu;
+	Temp[2][2] = KDec_lishudu;
+	Temp[2][3] = Error_c_lishudu_Max - KDec_lishudu;
+	/*确定四个点的隶属度(取2隶属度小的给1)*/
+	for (i = 0; i < 4; i++) {
+		if (Temp[1][i]>Temp[2][i]) {
+			Temp[1][i] = Temp[2][i];
+		}
+	}
+	/*小中取大，规则表中同等区域隶属度取大*/
+	if (Temp[0][0] == Temp[0][1]) {
+		if (Temp[1][0] > Temp[1][2])
+			Temp[1][2] = 0;
+		else
+			Temp[1][0] = 0;
+	}
+	if (Temp[0][0] == Temp[0][2]) {
+		if (Temp[1][0] > Temp[1][2])
+			Temp[1][2] = 0;
+		else
+			Temp[1][0] = 0;
+	}
+	if (Temp[0][0] == Temp[0][3]) {
+		if (Temp[1][0] > Temp[1][3])
+			Temp[1][3] = 0;
+		else
+			Temp[1][0] = 0;
+	}
+	if (Temp[0][1] == Temp[0][2]) {
+		if (Temp[1][1] > Temp[1][2])
+			Temp[1][2] = 0;
+		else
+			Temp[1][1] = 0;
+	}
+	if (Temp[0][1] == Temp[0][3]) {
+		if (Temp[1][1] > Temp[1][3])
+			Temp[1][3] = 0;
+		else
+			Temp[1][1] = 0;
+	}
+	if (Temp[0][2] == Temp[0][3]) {
+		if (Temp[1][2] > Temp[1][3])
+			Temp[1][3] = 0;
+		else
+			Temp[1][2] = 0;
+	}
+
+	for (i = 0; i < 4; i++) {
+		Numerator += KDdan[Temp[0][i]] * Temp[1][i];
+		Denominator += Temp[1][i];
+	}
+	if (Denominator < 2)
+		Denominator = 1;
+	return Numerator / Denominator;
+}
+
 /***********************************舵机和速度控制控制************************************/
 uint16_t Steer_output;
 inline void Servo_PDwithSpeed( int16_t *AD ) {

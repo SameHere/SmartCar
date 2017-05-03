@@ -222,7 +222,7 @@ Link map of __start
     3] .text (section,local) found in IntcIsrVectors.o 
     3] .text.15 (notype,local) found in IntcIsrVectors.o 
     3] .text (section,local) found in main.o 
-    3] .text.1481 (notype,local) found in main.o 
+    3] .text.1633 (notype,local) found in main.o 
     3] .text (section,local) found in MPC560xB_HWInit.o 
     3] .text.34 (notype,local) found in MPC560xB_HWInit.o 
     3] .text (section,local) found in Core_config.o 
@@ -336,13 +336,14 @@ Link map of __start
   00001418 0000ae 00022418 00002418  2 lost 	main.o 
   000014c6 000034 000224c6 000024c6  2 FindMax 	main.o 
   000014fa 000064 000224fa 000024fa  2 limit 	main.o 
-  UNUSED   000b60 ........ ........    FuzzyKP main.o 
+  UNUSED   0008f2 ........ ........    FuzzyKP main.o 
+  UNUSED   0008f2 ........ ........    FuzzyKD main.o 
   UNUSED   00005e ........ ........    StopCar main.o 
   0000155e 00010a 0002255e 0000255e  2 DisplaySwitch 	main.o 
   00001668 00004e 00022668 00002668  2 Dubug_Mode 	main.o 
   000016b6 0000f4 000226b6 000026b6  2 main 	main.o 
   000017aa 0000c0 000227aa 000027aa  2 Servo_PDwithSpeed 	main.o 
-  0000186a 000000 0002286a 0000286a  1 .text.1481 	main.o 
+  0000186a 000000 0002286a 0000286a  1 .text.1633 	main.o 
   0000186a 00001e 0002286a 0000286a  1 .text 	MPC560xB_HWInit.o 
   0000186a 00001e 0002286a 0000286a  2 INIT_Derivative 	MPC560xB_HWInit.o 
   UNUSED   000012 ........ ........    INIT_ExternalBusAndMemory MPC560xB_HWInit.o 
@@ -736,7 +737,9 @@ extabindex section layout
   UNUSED   00001c ........ ........    SetError main.o 
   UNUSED   00001c ........ ........    SetErrorRate main.o 
   UNUSED   00001c ........ ........    KPdan main.o 
+  UNUSED   00001c ........ ........    KDdan main.o 
   UNUSED   0000c4 ........ ........    KPrule main.o 
+  UNUSED   0000c4 ........ ........    KDrule main.o 
   00000070 0002c0 40000070 00004fd0  1 .data 	OLED_IIC_initiative.o 
   00000070 0002c0 40000070 00004fd0  8 Hzk 	OLED_IIC_initiative.o 
 
@@ -757,8 +760,6 @@ extabindex section layout
   00000035 000001 40000365 000052c5  1 period_sum_times 	main.o 
   00000036 000001 40000366 000052c6  1 Max_Cross 	main.o 
   00000037 000001 40000367 000052c7  1 Position_Old 	main.o 
-  UNUSED   000004 ........ ........    Error_lishudu_Max main.o 
-  UNUSED   000004 ........ ........    Error_c_lishudu_Max main.o 
 
 
 .sbss section layout
@@ -811,10 +812,6 @@ extabindex section layout
   UNUSED   000001 ........ ........    count_markerror main.o 
   0000006e 000002 400003d6 00005336  2 Max_Old 	main.o 
   00000070 000004 400003d8 00005338  4 ErrorM 	main.o 
-  UNUSED   000004 ........ ........    KPe main.o 
-  UNUSED   000004 ........ ........    KPe_lishudu main.o 
-  UNUSED   000004 ........ ........    KPec main.o 
-  UNUSED   000004 ........ ........    KPec_lishudu main.o 
   UNUSED   000001 ........ ........    StopCarCount main.o 
   00000074 000001 400003dc 0000533c  1 flag 	main.o 
   00000075 000001 400003dd 0000533d  1 ju 	main.o 
@@ -842,7 +839,6 @@ extabindex section layout
   UNUSED   00001e ........ ........    arrAD_Filter main.o 
   UNUSED   000014 ........ ........    arrFilter_Error main.o 
   0000002c 000064 40000424 000052f4  4 MarkError 	main.o 
-  UNUSED   000040 ........ ........    Temp main.o 
   00000090 000014 40000488 00005358  4 PAR 	main.o 
   000000a4 00003c 4000049c 0000536c  4 PID 	main.o 
   000000e0 000004 400004d8 000053a8  1 .bss 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
