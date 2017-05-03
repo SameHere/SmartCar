@@ -1421,8 +1421,10 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 
 int SetError[7]={-85 ,  -65 , -40,  0 , 40 ,  65 , 85};
 int SetErrorRate[7]={-25 , -19 , -10 , 0 , 10 , 19 , 25};
-int KPdan[7] = { 95, 80, 68, 28, 68, 80, 95 };
-int KDdan[7] = { 152,140,128, 95, 128, 140,152 };
+int KPdan[7] = { 475, 400, 340, 140, 340, 400, 475 };//原来值的乘5
+int KDdan[7] = { 760, 700, 640, 475, 640, 700, 760 };
+//int KPdan[7] = { 95, 80, 68, 28, 68, 80, 95 };
+//int KDdan[7] = { 152,140,128, 95, 128, 140,152 };
 int KPrule[7][7] = { 	
 	//误差变化率  0---1---2---3---4---5---6      //误差                                   
 	0, 0, 0, 0, 1, 2, 3,    //0  -3
@@ -1431,7 +1433,7 @@ int KPrule[7][7] = {
 	1, 2, 2, 3, 4, 4, 5,    //3   0  
 	2, 3, 3, 4, 5, 5, 6,    //4   1 
 	3, 3, 4, 5, 6, 6, 6,    //5   2  
-	3, 4, 5, 6, 6, 6, 6      //6   3  
+	3, 4, 5, 6, 6, 6, 6     //6   3  
 };			//KP规则表
 int KDrule[7][7] = { 	
 	//误差变化率  0---1---2---3---4---5---6      //误差                                   
@@ -1441,7 +1443,7 @@ int KDrule[7][7] = {
 	1, 2, 2, 3, 4, 4, 5,    //3   0  
 	2, 3, 3, 4, 5, 5, 6,    //4   1 
 	3, 3, 4, 5, 6, 6, 6,    //5   2  
-	3, 4, 5, 6, 6, 6, 6      //6   3  
+	3, 4, 5, 6, 6, 6, 6     //6   3  
 };			//KP规则表
 /******************************获得P值*********************************************************/
 int FuzzyKP() {
@@ -1813,7 +1815,7 @@ int FuzzyKD() {
 	return Numerator / Denominator;
 }
 
-/***********************************舵机和速度控制控制************************************/
+/***********************************舵机控制************************************/
 int32_t Steer_output;
 inline void Servo_PD( ) {
 	int max = servo_mid+servo_max;
@@ -1823,6 +1825,9 @@ inline void Servo_PD( ) {
 	temp=AD[1]/20;
 	PAR.Steer_P=P[temp];
     */
+    ErrorRate=Least_Square_Method(20, MarkError,markerror_pointer+30);
+    PAR.Steer_P=FuzzyKP();
+    PAR.Steer_D=FuzzyKD();
     Steer_output =  ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
     Steer_output = servo_mid + Steer_output/10;
     if( Steer_output > max )   
@@ -1830,8 +1835,6 @@ inline void Servo_PD( ) {
     if( Steer_output < min )   
     	Steer_output = min;
     servo_pwm = Steer_output;
-    
-
 }
 //********************停车检测*************************//
 #define   PARK_CAR   SIU.GPDI[PCR50_PD2].R
