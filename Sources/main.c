@@ -1,8 +1,7 @@
 #include "MPC5604B_0M27V_0102.h" /* Use proper include file */
 #include "MyHeader.h"
 /*---------------------------------------------------------------------------------------*/
-/*				            	2016电磁		    						 			 */
-/* 			2016/12/16 备份:PWM1500稳定跑 kp0=11 kp1=18 kp2=13 kd=6						 */
+/*				            		第十二届电磁组		    							 */
 /*---------------------------------------------------------------------------------------*/
 extern core_config();
 extern enableIrq();
@@ -101,7 +100,7 @@ int thread=7;
 #define   BEE_OUTPUT                  SIU.GPDO[PCR47_PC15].R
 
 #define   SAMPLING_TIME                       15     //采样次数
-#define   ARR_MARKERROR_LENGTH                25
+#define   ARR_MARKERROR_LENGTH                50
 
 
 #define  port_output   0x0200                                                           //*
@@ -361,15 +360,17 @@ float ABS_f( float x,float y )
     else	return( y-x );
 }
 /*-------------------------------------------------------------------*/
-int Least_Square_Method(int n, int* data) {
+int Least_Square_Method(int n, int* data,int start) {
 	int i, K=0,sumxy = 0, sumx = 0, sumy = 0, sumxx = 0, Numerator = 0, Denominator;
 	for (i = 0; i < n; i++) {
-		sumxy += (i*data[i]);
+		start%=ARR_MARKERROR_LENGTH;
+		sumxy += (i*data[start]);
 		sumx += i;
-		sumy += data[i];
+		sumy += data[start];
 		sumxx += (i*i);
+		start++;
 	}
-	Numerator  = n*sumxy - sumx*sumy;
+	Numerator  = (n*sumxy - sumx*sumy)*100;
 	Denominator = n*sumxx - sumx*sumx;
 	if (Denominator == 0)
 		Denominator = 1;
@@ -1406,28 +1407,14 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     Position_Old = Position;
     
 /*-----------------------------计算偏移量----------------------------------*/
-	/*
-	if(Position==0)
-		ErrorM=-(200-AD[1])/2;
-	else if(Position==3)
-		ErrorM=(200-AD[1])/2;
-	else
-		ErrorM=0;
-	*/
 	Error1=lost(limit((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread,(float)laserror),AD);
-	//if(ErrorM!=0)
-	//	Error1=(thread*Error1+(10-thread)*ErrorM)/10;
 	laserror=Error1;
     Error =  Error1;
-/************************************Error存储************************************************/
+/*-----------------------------偏移量存储----------------------------------*/
    	markerror_pointer %= ARR_MARKERROR_LENGTH;         //使用循环队列存储Error来计算变化率
 	MarkError[markerror_pointer] = Error;
     LastError = MarkError[( markerror_pointer + 1 )%ARR_MARKERROR_LENGTH ];   //宏定义 ARR_MARKERROR_LENGTH 次之前的error
     markerror_pointer++;
-    for(i=0;i<25;i++) {
-    	Errorall+=MarkError[i];
-    }
-    Errorall/=10;
 }
 /******************************模糊控制相关变量*************************************/
 
@@ -1460,7 +1447,7 @@ int FuzzyKP() {
 	int Numerator=0,Denominator=0,i=0;
 	int KPe=0,KPe_lishudu=0,KPec=0,KPec_lishudu=0;
 	int Temp[4][4]={0};
-	/******************************用Error求KP*************************************/
+	/*-----------------------------偏移量求KPe和KPe_lishudu----------------------------------*/
 	if (Error >= SetError[0] && Error < SetError[6]) {
 		if (Error < (SetError[0] + SetError[1]) / 2) {
 			KPe = 0;
@@ -1517,9 +1504,7 @@ int FuzzyKP() {
 		KPe_lishudu = 0;
 	}
 
-	/******************************用Error变化率求KPec*************************************/
-	/******************************用Error变化率求*************************************/
-	/******************************用Error变化率求*************************************/
+	/*-----------------------------偏移量变化率求KPec和KPec_lishudu----------------------------------*/
 	if (ErrorRate >= SetErrorRate[0] && ErrorRate < SetErrorRate[6]) {
 		if (ErrorRate < (SetErrorRate[0] + SetErrorRate[1]) / 2) {
 			KPec = 0;
@@ -1633,7 +1618,7 @@ int FuzzyKP() {
 	}
 
 	for (i = 0; i < 4; i++) {
-		Numerator += KPdan[Temp[0][i]]*Temp[1][i] ;
+		Numerator += (KPdan[Temp[0][i]]*Temp[1][i]) ;
 		Denominator += Temp[1][i];
 	}
 	if (Denominator < 2)
@@ -1645,7 +1630,7 @@ int FuzzyKD() {
 	int Numerator = 0, Denominator = 0, i = 0;
 	int KDe = 0, KDe_lishudu = 0, KDec = 0, KDec_lishudu = 0;
 	int Temp[4][4] = { 0 };
-	/******************************用Error求KD*************************************/
+	/*-----------------------------偏移量求KDe和KDe_lishudu----------------------------------*/
 	if (Error >= SetError[0] && Error < SetError[6]) {
 		if (Error < (SetError[0] + SetError[1]) / 2) {
 			KDe = 0;
@@ -1705,9 +1690,7 @@ int FuzzyKD() {
 		KDe_lishudu = 0;
 	}
 
-	/******************************用Error变化率求KDec*************************************/
-	/******************************用Error变化率求*************************************/
-	/******************************用Error变化率求*************************************/
+	/*-----------------------------偏移量变化率求KDec和KDec_lishudu----------------------------------*/
 	if (ErrorRate >= SetErrorRate[0] && ErrorRate < SetErrorRate[6]) {
 		if (ErrorRate < (SetErrorRate[0] + SetErrorRate[1]) / 2) {
 			KDec = 0;
@@ -1821,7 +1804,7 @@ int FuzzyKD() {
 	}
 
 	for (i = 0; i < 4; i++) {
-		Numerator += KDdan[Temp[0][i]] * Temp[1][i];
+		Numerator += (KDdan[Temp[0][i]] * Temp[1][i]);
 		Denominator += Temp[1][i];
 	}
 	if (Denominator < 2)
@@ -1831,14 +1814,14 @@ int FuzzyKD() {
 
 /***********************************舵机和速度控制控制************************************/
 uint16_t Steer_output;
-inline void Servo_PDwithSpeed( int16_t *AD ) {
+inline void Servo_PD( ) {
 	int max = servo_mid+servo_max;
 	int min = servo_mid+servo_min;
-	
+	/*
 	int temp=0;
 	temp=AD[1]/20;
 	PAR.Steer_P=P[temp];
-    
+    */
     Steer_output = servo_mid + ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
     if( Steer_output > max )   
     	Steer_output = max;
@@ -1846,10 +1829,7 @@ inline void Servo_PDwithSpeed( int16_t *AD ) {
     	Steer_output = min;
     servo_pwm = Steer_output;
     
-    if( flage_tiaosu ) {	
-	   Speed_PID( smartcar_speed, PAR.Speed_Set );
-	   flage_tiaosu = 0;
-	}
+
 }
 //********************停车检测*************************//
 #define   PARK_CAR   SIU.GPDI[PCR50_PD2].R
@@ -1962,8 +1942,18 @@ void main ( void )
     	Sampling( );
 		Normalization( ADaverage, Noise_Value, Max_Value, AD, 6 );
         Position_analyse_front( NormalizePT, Max_Value, AD ); 
-        Servo_PDwithSpeed( AD );
-        DisplaySwitch(AD);
+        Servo_PD();
+        if( flage_tiaosu ) {	
+	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
+	    	flage_tiaosu = 0;
+		}
+		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
+       		OLED_ShowNum( 0,0,AD[0],4,16 );
+    		OLED_ShowNum( 40,0,AD[1],4,16 );
+       		OLED_ShowNum( 80,0,AD[2],4,16 );
+       		OLED_ShowNum( 40,3,ABS(Least_Square_Method(20,MarkError,markerror_pointer+30),0),4,16 );	
+       	}
+        //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
     }	
