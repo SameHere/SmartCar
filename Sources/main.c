@@ -1952,14 +1952,14 @@ void main ( void )
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
 		}
-		/*
+		
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-       		OLED_ShowNum( 0,0,AD[0],4,16 );
-    		OLED_ShowNum( 40,0,AD[1],4,16 );
-       		OLED_ShowNum( 80,0,AD[2],4,16 );
+       		OLED_ShowNum( 20,0,PAR.Steer_P,4,16 );
+    		//OLED_ShowNum( 40,0,AD[1],4,16 );
+       		OLED_ShowNum( 60,0,PAR.Steer_D,4,16 );
        		OLED_ShowNum( 40,3,ABS(Error,0),4,16 );	
        	}
-       	*/
+       	
         //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
