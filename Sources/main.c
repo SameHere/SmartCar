@@ -74,7 +74,7 @@ uint8_t Position=0;
 int Distance=1200;
 uint8_t P[10]={14,13,12,11,9,7,6,5,4,4};
 //uint8_t P[10]={16,15,14,13,12,9,8,7,6,5};
-int Thread=600;
+int Thread=400;
 int thread=7;
 //=====================================================================//
 ////////////////////////按键、蜂鸣器、指示灯初始化//////////////////////
@@ -242,13 +242,13 @@ void xianshi( void )
 
 
         //***********待修改参数*************************//
-        Show_Me_Data( PAR.Speed_Set,50,1 );
+        Show_Me_Data( PAR.Speed_Set,100,1 );
+        //Show_Me_Data( thread,1,8 );
+		Show_Me_Data( PAR.Steer_P,5,3 );
+        Show_Me_Data( PAR.Steer_D,5,4 );
         Show_Me_Data( Thread, 25, 7 );
-        Show_Me_Data( thread,1,8 );
-		Show_Me_Data( PAR.Steer_P,1,3 );
-        Show_Me_Data( PAR.Steer_D,1,4 );
         
-        Show_Me_Data( Distance, 100, 5 );
+        //Show_Me_Data( Distance, 100, 5 );
         
         //Show_Me_Data( PAR.Set_Steer_P, 1, 6 );
 
@@ -405,6 +405,7 @@ inline int lost(int error,int16_t *AD) {
 			error=laserror;
 		if(dir==-1&&AD[2]>=AD[0])
 			error=laserror;
+		
 	}
 	if(AD[1]<min&&dir==0) {
 		if(error<0)
@@ -1813,7 +1814,7 @@ int FuzzyKD() {
 }
 
 /***********************************舵机和速度控制控制************************************/
-uint16_t Steer_output;
+int32_t Steer_output;
 inline void Servo_PD( ) {
 	int max = servo_mid+servo_max;
 	int min = servo_mid+servo_min;
@@ -1822,7 +1823,8 @@ inline void Servo_PD( ) {
 	temp=AD[1]/20;
 	PAR.Steer_P=P[temp];
     */
-    Steer_output = servo_mid + ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
+    Steer_output =  ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
+    Steer_output = servo_mid + Steer_output/10;
     if( Steer_output > max )   
     	Steer_output = max;
     if( Steer_output < min )   
@@ -1893,9 +1895,9 @@ void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 	Max_Valu[0]=230;Max_Valu[1]=234;Max_Valu[2]=230;
 	Noise_Value[0]=25;Noise_Value[1]=23;Noise_Value[2]=25;
 	NormalizePT[0]=51;NormalizePT[1]=53;
-	PAR.Speed_Set = 2100;
-	PAR.Steer_D = 24;
-	PAR.Steer_P = 18;
+	PAR.Speed_Set = 1900;
+	PAR.Steer_D = 240;
+	PAR.Steer_P = 180;
 }
 /*******************************主函数*******************************************/
 void main ( void )
@@ -1947,12 +1949,14 @@ void main ( void )
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
 		}
+		/*
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
        		OLED_ShowNum( 0,0,AD[0],4,16 );
     		OLED_ShowNum( 40,0,AD[1],4,16 );
        		OLED_ShowNum( 80,0,AD[2],4,16 );
-       		OLED_ShowNum( 40,3,ABS(Least_Square_Method(20,MarkError,markerror_pointer+30),0),4,16 );	
+       		OLED_ShowNum( 40,3,ABS(Error,0),4,16 );	
        	}
+       	*/
         //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
