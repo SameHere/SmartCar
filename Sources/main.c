@@ -66,6 +66,7 @@ struct motor_PID
 
 int Error=0;
 int ErrorRate=0;
+int ErrorP=0;int LastErrorP=0;
 int LastError=0;
 uint16_t ADC_flag = 0;
 int16_t ADaverage[6] = {0};		 	    // 采样处理后的均值
@@ -396,15 +397,15 @@ inline int FindMax(int16_t* AD,int n) {
 }
 /*-------------------------------------------------------------------*/
 int dir=0;
-inline int lost(int error,int16_t *AD) {
+inline int lost(float error,float Last,int16_t *AD) {
 	int min=10,max=40,i;
 	if(dir!=0) {
 		if(FindMax(AD,3)<=8&&ABS(AD[0],AD[2])<6)
-			error=laserror;
+			error=Last;
 		if(dir==1&&AD[0]>=AD[2])
-			error=laserror;
+			error=Last;
 		if(dir==-1&&AD[2]>=AD[0])
-			error=laserror;
+			error=Last;
 		
 	}
 	if(AD[1]<min&&dir==0) {
@@ -415,6 +416,11 @@ inline int lost(int error,int16_t *AD) {
 	} else if(AD[1]>max) {
 		dir=0;	
 	}
+	if(error-Last>7)
+		error+=7;
+	else if(Last-error>7)
+		error-=7;
+	
 	return error;
 	//if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
 
@@ -1340,6 +1346,7 @@ uint8_t  Max_Cross = 1;           //初始化值给1，使其开始记录上次的位置
 uint16_t Max_Old = 0;         //记录上一次的最大电感位置
 uint8_t Position_Old = 1;
 int ErrorM=0;
+
 void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 {
 
@@ -1408,10 +1415,12 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     Position_Old = Position;
     
 /*-----------------------------计算偏移量----------------------------------*/
-	Error1=lost(limit((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread,(float)laserror),AD);
-	laserror=Error1;
-    Error =  Error1;
+	ErrorP=lost(((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread),(float)LastErrorP,AD);
+	
+    Error =  ErrorP;
 /*-----------------------------偏移量存储----------------------------------*/
+	LastErrorP=ErrorP;
+	
    	markerror_pointer %= ARR_MARKERROR_LENGTH;         //使用循环队列存储Error来计算变化率
 	MarkError[markerror_pointer] = Error;
     LastError = MarkError[( markerror_pointer + 1 )%ARR_MARKERROR_LENGTH ];   //宏定义 ARR_MARKERROR_LENGTH 次之前的error
@@ -1826,8 +1835,8 @@ inline void Servo_PD( ) {
 	PAR.Steer_P=P[temp];
     */
     ErrorRate=Least_Square_Method(20, MarkError,markerror_pointer+30);
-    PAR.Steer_P=FuzzyKP();
-    PAR.Steer_D=FuzzyKD();
+    //PAR.Steer_P=FuzzyKP();
+    //PAR.Steer_D=FuzzyKD();
     Steer_output =  ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
     Steer_output = servo_mid + Steer_output/10;
     if( Steer_output > max )   
@@ -1954,9 +1963,9 @@ void main ( void )
 		}
 		
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-       		OLED_ShowNum( 20,0,PAR.Steer_P,4,16 );
+       		//OLED_ShowNum( 20,0,PAR.Steer_P,4,16 );
     		//OLED_ShowNum( 40,0,AD[1],4,16 );
-       		OLED_ShowNum( 60,0,PAR.Steer_D,4,16 );
+       		//OLED_ShowNum( 60,0,PAR.Steer_D,4,16 );
        		OLED_ShowNum( 40,3,ABS(Error,0),4,16 );	
        	}
        	
