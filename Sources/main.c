@@ -64,10 +64,11 @@ struct motor_PID
 } PID;
 /*************************新算法各类变量*****************************/
 int ErrorRate=0;
-int ErrorFitVPwithP=0;
+int ErrorFit=0;
 int Error=0;int LastError1=0;
 int ErrorP=0;int LastErrorP=0;
 int ErrorVP=0;int LastErrorVP=0;
+int ErrorV=0;int LastErrorV=0;
 int LastError=0;
 uint16_t ADC_flag = 0;
 int16_t ADaverage[6] = {0};		 	    // 采样处理后的均值
@@ -388,9 +389,9 @@ inline int limit(float x,float n) {
 	return x;
 }
 inline int limit1(int x,int min,int max) {
-	if(x<=min)
+	if(x<min)
 		return min;
-	else if(x>=max)
+	else if(x>max)
 		return max;
 }
 /*-------------------------------------------------------------------*/
@@ -1383,7 +1384,8 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	int16_t WeightP_Mid=0;
 	int16_t WeightP_P=0;
 	int16_t WeightVP=0;
-	int16_t WeightP=0;
+	int16_t WeightV=0;
+	int16_t WeightFit=0;
 	//Filter_AD( AD );
     
     /*--------------------------找最大电感位置--------------------------*/
@@ -1443,33 +1445,27 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     Position_Old = Position;
     
 /*-----------------------------偏差计算与滤波----------------------------------*/
+	/*水平偏差*/
 	ErrorP=lost(((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread),(float)LastErrorP,AD);
-	ErrorVP=lost(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),(float)LastErrorVP,AD);
-/*-----------------------------权值计算----------------------------------*/
-	WeightP_Mid=limit1(200-2*AD[1],0,200);	
-	WeightP_P=limit1(2*AD[1],0,200);
-	/*
-	if(ErrorP>0)
-		Error=(WeightP_Mid*(200-AD[1])+WeightP_P*ErrorP)/400;
-	else if(ErrorP<0)
-		Error=(WeightP_Mid*(AD[1]-200)+WeightP_P*ErrorP)/400;
-	else if(ErrorP==0&&AD[1]>90)
-		Error=ErrorP;
-	*/
+	/*水平垂直偏差*/
+	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
+	/*垂直偏差*/
+	ErrorV=limit1(AD[4]-AD[3],-120,120);
 /*------------------------------偏差融合----------------------------------*/
-	ErrorFitVPwithP=((200-AD[1])*ErrorVP+2*AD[1]*ErrorP)/(200+AD[1]);
-
+	ErrorFit=((200-AD[1])*ErrorVP+2*AD[1]*ErrorP)/(200+AD[1]);
+/*------------------------------偏差权值计算----------------------------------*/
     if(AD[1]>110) {
-        WeightP=430-(AD[3]+AD[4]);
+        WeightV=430-limit1(AD[3]+AD[4],200,400);
     } else {
-       WeightP=ABS(AD[3],AD[4]);
+       WeightV=ABS(AD[3],AD[4]);
     }
-    WeightP=limit1(WeightP,1,230);
-	WeightVP=10+ABS(ErrorFitVPwithP,0);
+	WeightFit=10+ABS(ErrorFit,0);
 	
-	Error=(WeightVP*ErrorVP+WeightP*ErrorP)/(WeightVP+WeightP);
+	Error=(WeightFit*ErrorFit+WeightV*ErrorV)/(WeightFit+WeightV);
 	
 /*-----------------------------偏移量存储---------------------------------*/
+		
+	LastErrorV=ErrorV;
 	LastErrorP=ErrorP;
 	LastErrorVP=ErrorVP;
 	LastError1=Error;
@@ -2014,14 +2010,15 @@ void main ( void )
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
 		}
-		/*
+		
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
        		//OLED_ShowNum( 20,0,PAR.Steer_P,4,16 );
     		//OLED_ShowNum( 40,0,AD[1],4,16 );
        		//OLED_ShowNum( 60,0,PAR.Steer_D,4,16 );
-       		OLED_ShowNum( 40,3,ABS(Error,0),4,16 );	
+       		OLED_ShowNum( 20,3,ABS(AD[3],0),4,16 );
+       		OLED_ShowNum( 60,3,ABS(AD[4],0),4,16 );	
        	}
-       	*/
+       	
         //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
