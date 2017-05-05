@@ -25,9 +25,9 @@ void Show_Me_Data( uint16_t number_test,uint8_t change,uint8_t flag );
 /*---------------------------------------------------------------------------------------*/
 #define   servo_pwm      EMIOS_0.CH[21].CBDR.R     //Maximal value is 13333
 #define   motor_pwm    	 EMIOS_0.CH[13].CBDR.R     //Maximal value is 8000
-#define   servo_max     	1200//右转极限
-#define   servo_min     	-1200//左转极限
-#define   servo_mid     	5960
+#define   servo_max     	1300//右转极限
+#define   servo_min     	-1300//左转极限
+#define   servo_mid     	5940
 #define Error_lishudu_Max  	200
 #define Error_c_lishudu_Max 200
 /*========================================================================================*/
@@ -1468,7 +1468,7 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	LastErrorV=ErrorV;
 	LastErrorP=ErrorP;
 	LastErrorVP=ErrorVP;
-	LastError1=Error;
+	LastError1=Error; 
 	
    	markerror_pointer %= ARR_MARKERROR_LENGTH;         //使用循环队列存储Error来计算变化率
 	MarkError[markerror_pointer] = Error;
@@ -1953,8 +1953,8 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=230;Max_Valu[1]=234;Max_Valu[2]=230;Max_Valu[3]=230;Max_Valu[4]=230;
-	Noise_Value[0]=25;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=31;Noise_Value[4]=29;
+	Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=220;Max_Valu[4]=220;
+	Noise_Value[0]=25;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=34;Noise_Value[4]=28;
 	NormalizePT[0]=51;NormalizePT[1]=53;
 	PAR.Speed_Set = 1900;
 	PAR.Steer_D = 240;
@@ -1979,7 +1979,7 @@ void main ( void )
     enableIrq();
     
 
-   	Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
+	//Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
     
     BEE_CONFIG = port_output;
     BEE_OUTPUT = LOW;
@@ -2010,7 +2010,7 @@ void main ( void )
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
 		}
-		
+		/*
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
        		//OLED_ShowNum( 20,0,PAR.Steer_P,4,16 );
     		//OLED_ShowNum( 40,0,AD[1],4,16 );
@@ -2018,7 +2018,7 @@ void main ( void )
        		OLED_ShowNum( 20,3,ABS(AD[3],0),4,16 );
        		OLED_ShowNum( 60,3,ABS(AD[4],0),4,16 );	
        	}
-       	
+       	*/
         //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
