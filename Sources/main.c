@@ -64,7 +64,7 @@ struct motor_PID
 } PID;
 /*************************新算法各类变量*****************************/
 int ErrorRate=0;
-int ErrorFit=0;
+int ErrorFit=0;int LastErrorFit=0;
 int Error=0;int LastError1=0;
 int ErrorP=0;int LastErrorP=0;
 int ErrorVP=0;int LastErrorVP=0;
@@ -1465,9 +1465,11 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	
 /*-----------------------------偏移量存储---------------------------------*/
 		
-	LastErrorV=ErrorV;
+	
 	LastErrorP=ErrorP;
 	LastErrorVP=ErrorVP;
+	LastErrorFit=ErrorFit;
+	LastErrorV=ErrorV;
 	LastError1=Error; 
 	
    	markerror_pointer %= ARR_MARKERROR_LENGTH;         //使用循环队列存储Error来计算变化率
@@ -1953,12 +1955,12 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=220;Max_Valu[4]=220;
-	Noise_Value[0]=25;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=34;Noise_Value[4]=28;
+	Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=200;Max_Valu[4]=200;
+	Noise_Value[0]=26;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=29;Noise_Value[4]=28;
 	NormalizePT[0]=51;NormalizePT[1]=53;
 	PAR.Speed_Set = 1900;
 	PAR.Steer_D = 240;
-	PAR.Steer_P = 160;
+	PAR.Steer_P = 180;
 }
 /*******************************主函数*******************************************/
 void main ( void )
@@ -1979,7 +1981,7 @@ void main ( void )
     enableIrq();
     
 
-	//Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
+	Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
     
     BEE_CONFIG = port_output;
     BEE_OUTPUT = LOW;
@@ -2012,11 +2014,12 @@ void main ( void )
 		}
 		/*
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-       		//OLED_ShowNum( 20,0,PAR.Steer_P,4,16 );
-    		//OLED_ShowNum( 40,0,AD[1],4,16 );
-       		//OLED_ShowNum( 60,0,PAR.Steer_D,4,16 );
-       		OLED_ShowNum( 20,3,ABS(AD[3],0),4,16 );
-       		OLED_ShowNum( 60,3,ABS(AD[4],0),4,16 );	
+       		OLED_ShowNum( 0,0,ABS(ErrorP,0),4,16 );
+			OLED_ShowNum( 40,0,AD[1],4,16 );	
+       		OLED_ShowNum( 80,0,ABS(ErrorVP,0),4,16 );
+       		OLED_ShowNum( 30,3,ABS(ErrorFit,0),4,16 );
+       		OLED_ShowNum( 60,3,ABS(ErrorV,0),4,16 );
+       		OLED_ShowNum( 40,6,ABS(Error,0),4,16 );
        	}
        	*/
         //DisplaySwitch(AD);

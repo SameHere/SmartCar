@@ -84,6 +84,8 @@ Link map of __start
     3] PID_init (func,global) found in main.o 
      4] PID (object,global) found in main.o 
     3] enableIrq (func,global) found in Core_config.o 
+    3] Dubug_Mode (func,global) found in main.o 
+     4] PAR (object,global) found in main.o 
     3] delay_ms (func,global) found in OLED_IIC_initiative.o 
     3] initI2C (func,global) found in I2C_drive.o 
     3] OLED_Init (func,global) found in OLED_IIC_initiative.o 
@@ -101,7 +103,6 @@ Link map of __start
        6] F8X16 (object,global) found in OLED_IIC_initiative.o 
        6] F6x8 (object,global) found in OLED_IIC_initiative.o 
     3] xianshi (func,global) found in main.o 
-     4] PAR (object,global) found in main.o 
      4] Show_Me_Data (func,global) found in main.o 
       5] @102 (object,local) found in main.o 
       5] @109 (object,local) found in main.o 
@@ -164,8 +165,8 @@ Link map of __start
      4] Max_Cross (object,global) found in main.o 
      4] Position (object,global) found in main.o 
      4] Position_Old (object,global) found in main.o 
-     4] ErrorVP (object,global) found in main.o 
      4] ErrorP (object,global) found in main.o 
+     4] ErrorFit (object,global) found in main.o 
      4] Max_Old (object,global) found in main.o 
      4] LastErrorP (object,global) found in main.o 
      4] _f_add (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
@@ -195,9 +196,10 @@ Link map of __start
       5] FindMax (func,weak) found in main.o 
      4] LastErrorVP (object,global) found in main.o 
      4] limit1 (func,weak) found in main.o 
+     4] ErrorVP (object,global) found in main.o 
      4] ErrorV (object,global) found in main.o 
-     4] ErrorFit (object,global) found in main.o 
      4] Error (object,global) found in main.o 
+     4] LastErrorFit (object,global) found in main.o 
      4] LastErrorV (object,global) found in main.o 
      4] LastError1 (object,global) found in main.o 
      4] markerror_pointer (object,global) found in main.o 
@@ -301,7 +303,7 @@ Link map of __start
   0000001e 000004 0002101e 0000101e  1 .text 	IntcIsrVectors.o 
   0000001e 000004 0002101e 0000101e  2 dummy 	IntcIsrVectors.o 
   00000022 000000 00021022 00001022  1 .text.15 	IntcIsrVectors.o 
-  00000022 001930 00021022 00001022  1 .text 	main.o 
+  00000022 0019ac 00021022 00001022  1 .text 	main.o 
   UNUSED   000040 ........ ........    PAR_init main.o 
   00000022 0000b0 00021022 00001022  2 Desktop 	main.o 
   000000d2 0001a0 000210d2 000010d2  2 Show_Me_Data 	main.o 
@@ -334,84 +336,84 @@ Link map of __start
   UNUSED   000278 ........ ........    Find_Transit_front main.o 
   UNUSED   0000c2 ........ ........    Filter_AD main.o 
   UNUSED   0000a2 ........ ........    Filter_Error main.o 
-  000012c0 0003c2 000222c0 000022c0  2 Position_analyse_front 	main.o 
-  00001682 000012 00022682 00002682  2 limit1 	main.o 
-  00001694 0000fe 00022694 00002694  2 lost 	main.o 
-  00001792 000034 00022792 00002792  2 FindMax 	main.o 
+  000012c0 0003ca 000222c0 000022c0  2 Position_analyse_front 	main.o 
+  0000168a 000012 0002268a 0000268a  2 limit1 	main.o 
+  0000169c 0000fe 0002269c 0000269c  2 lost 	main.o 
+  0000179a 000034 0002279a 0000279a  2 FindMax 	main.o 
   UNUSED   0008f2 ........ ........    FuzzyKP main.o 
   UNUSED   0008f2 ........ ........    FuzzyKD main.o 
   UNUSED   00005e ........ ........    StopCar main.o 
   UNUSED   00010a ........ ........    DisplaySwitch main.o 
-  UNUSED   000066 ........ ........    Dubug_Mode main.o 
-  000017c6 0000fc 000227c6 000027c6  2 main 	main.o 
-  000018c2 000090 000228c2 000028c2  2 Servo_PD 	main.o 
-  00001952 000000 00022952 00002952  1 .text.1808 	main.o 
-  00001952 00001e 00022952 00002952  1 .text 	MPC560xB_HWInit.o 
-  00001952 00001e 00022952 00002952  2 INIT_Derivative 	MPC560xB_HWInit.o 
+  000017ce 000066 000227ce 000027ce  2 Dubug_Mode 	main.o 
+  00001834 00010a 00022834 00002834  2 main 	main.o 
+  0000193e 000090 0002293e 0000293e  2 Servo_PD 	main.o 
+  000019ce 000000 000229ce 000029ce  1 .text.1808 	main.o 
+  000019ce 00001e 000229ce 000029ce  1 .text 	MPC560xB_HWInit.o 
+  000019ce 00001e 000229ce 000029ce  2 INIT_Derivative 	MPC560xB_HWInit.o 
   UNUSED   000012 ........ ........    INIT_ExternalBusAndMemory MPC560xB_HWInit.o 
   UNUSED   00000c ........ ........    InitPCRs MPC560xB_HWInit.o 
   UNUSED   000064 ........ ........    __initSIUExtBusInterface MPC560xB_HWInit.o 
   UNUSED   000002 ........ ........    __initEBIChipSelects MPC560xB_HWInit.o 
   UNUSED   000016 ........ ........    WriteMMUTableEntry MPC560xB_HWInit.o 
   UNUSED   000006 ........ ........    __initMMUExternalMemory MPC560xB_HWInit.o 
-  00001970 000000 00022970 00002970  1 .text.34 	MPC560xB_HWInit.o 
-  00001970 000184 00022970 00002970  1 .text 	Core_config.o 
-  00001970 0000c4 00022970 00002970  2 initModesAndClock 	Core_config.o 
-  00001a34 000032 00022a34 00002a34  2 disableWatchdog 	Core_config.o 
-  00001a66 00000e 00022a66 00002a66  2 initIrqVectors 	Core_config.o 
-  00001a74 000036 00022a74 00002a74  2 initINTC 	Core_config.o 
-  00001aaa 000018 00022aaa 00002aaa  2 enableIrq 	Core_config.o 
-  00001ac2 000018 00022ac2 00002ac2  2 disableIrq 	Core_config.o 
-  00001ada 00001a 00022ada 00002ada  2 core_config 	Core_config.o 
-  00001af4 000000 00022af4 00002af4  1 .text.43 	Core_config.o 
-  00001af4 000038 00022af4 00002af4  1 .text 	STM_initialize.o 
-  00001af4 000038 00022af4 00002af4  2 initSTM 	STM_initialize.o 
-  00001b2c 000000 00022b2c 00002b2c  1 .text.9 	STM_initialize.o 
-  00001b2c 000112 00022b2c 00002b2c  1 .text 	SCI_drive.o 
-  00001b2c 000112 00022b2c 00002b2c  2 initSCI 	SCI_drive.o 
+  000019ec 000000 000229ec 000029ec  1 .text.34 	MPC560xB_HWInit.o 
+  000019ec 000184 000229ec 000029ec  1 .text 	Core_config.o 
+  000019ec 0000c4 000229ec 000029ec  2 initModesAndClock 	Core_config.o 
+  00001ab0 000032 00022ab0 00002ab0  2 disableWatchdog 	Core_config.o 
+  00001ae2 00000e 00022ae2 00002ae2  2 initIrqVectors 	Core_config.o 
+  00001af0 000036 00022af0 00002af0  2 initINTC 	Core_config.o 
+  00001b26 000018 00022b26 00002b26  2 enableIrq 	Core_config.o 
+  00001b3e 000018 00022b3e 00002b3e  2 disableIrq 	Core_config.o 
+  00001b56 00001a 00022b56 00002b56  2 core_config 	Core_config.o 
+  00001b70 000000 00022b70 00002b70  1 .text.43 	Core_config.o 
+  00001b70 000038 00022b70 00002b70  1 .text 	STM_initialize.o 
+  00001b70 000038 00022b70 00002b70  2 initSTM 	STM_initialize.o 
+  00001ba8 000000 00022ba8 00002ba8  1 .text.9 	STM_initialize.o 
+  00001ba8 000112 00022ba8 00002ba8  1 .text 	SCI_drive.o 
+  00001ba8 000112 00022ba8 00002ba8  2 initSCI 	SCI_drive.o 
   UNUSED   00002e ........ ........    SCI0_SendChar SCI_drive.o 
   UNUSED   000066 ........ ........    SCI0_SendChar_16 SCI_drive.o 
   UNUSED   00002e ........ ........    SCI0_RecvChar SCI_drive.o 
-  00001c3e 000000 00022c3e 00002c3e  1 .text.44 	SCI_drive.o 
-  00001c3e 00007a 00022c3e 00002c3e  1 .text 	ADC_initialize.o 
-  00001c3e 00007a 00022c3e 00002c3e  2 initADC 	ADC_initialize.o 
-  00001cb8 000000 00022cb8 00002cb8  1 .text.9 	ADC_initialize.o 
-  00001cb8 000024 00022cb8 00002cb8  1 .text 	PIT_initialize.o 
-  00001cb8 000024 00022cb8 00002cb8  2 initPIT 	PIT_initialize.o 
-  00001cdc 000000 00022cdc 00002cdc  1 .text.9 	PIT_initialize.o 
-  00001cdc 000302 00022cdc 00002cdc  1 .text 	eMIOS_initialize.o 
-  00001cdc 000302 00022cdc 00002cdc  2 initEMIOS 	eMIOS_initialize.o 
-  00001fde 000000 00022fde 00002fde  1 .text.9 	eMIOS_initialize.o 
-  00001fde 000204 00022fde 00002fde  1 .text 	I2C_drive.o 
-  00001fde 000016 00022fde 00002fde  2 initI2C 	I2C_drive.o 
-  00001ff4 00006c 00022ff4 00002ff4  2 I2C_start 	I2C_drive.o 
-  00002060 00006c 00023060 00003060  2 I2C_stop 	I2C_drive.o 
-  000020cc 000116 000230cc 000030cc  2 I2C_send_byte 	I2C_drive.o 
+  00001cba 000000 00022cba 00002cba  1 .text.44 	SCI_drive.o 
+  00001cba 00007a 00022cba 00002cba  1 .text 	ADC_initialize.o 
+  00001cba 00007a 00022cba 00002cba  2 initADC 	ADC_initialize.o 
+  00001d34 000000 00022d34 00002d34  1 .text.9 	ADC_initialize.o 
+  00001d34 000024 00022d34 00002d34  1 .text 	PIT_initialize.o 
+  00001d34 000024 00022d34 00002d34  2 initPIT 	PIT_initialize.o 
+  00001d58 000000 00022d58 00002d58  1 .text.9 	PIT_initialize.o 
+  00001d58 000302 00022d58 00002d58  1 .text 	eMIOS_initialize.o 
+  00001d58 000302 00022d58 00002d58  2 initEMIOS 	eMIOS_initialize.o 
+  0000205a 000000 0002305a 0000305a  1 .text.9 	eMIOS_initialize.o 
+  0000205a 000204 0002305a 0000305a  1 .text 	I2C_drive.o 
+  0000205a 000016 0002305a 0000305a  2 initI2C 	I2C_drive.o 
+  00002070 00006c 00023070 00003070  2 I2C_start 	I2C_drive.o 
+  000020dc 00006c 000230dc 000030dc  2 I2C_stop 	I2C_drive.o 
+  00002148 000116 00023148 00003148  2 I2C_send_byte 	I2C_drive.o 
   UNUSED   0000f2 ........ ........    I2C_read_byte I2C_drive.o 
   UNUSED   00003c ........ ........    I2C_WriteChar I2C_drive.o 
   UNUSED   0000b0 ........ ........    I2C_ReadWord I2C_drive.o 
-  000021e2 000000 000231e2 000031e2  1 .text.182 	I2C_drive.o 
-  000021e2 0007a4 000231e2 000031e2  1 .text 	OLED_IIC_initiative.o 
-  000021e2 00001e 000231e2 000031e2  2 delay_ms 	OLED_IIC_initiative.o 
+  0000225e 000000 0002325e 0000325e  1 .text.182 	I2C_drive.o 
+  0000225e 0007a4 0002325e 0000325e  1 .text 	OLED_IIC_initiative.o 
+  0000225e 00001e 0002325e 0000325e  2 delay_ms 	OLED_IIC_initiative.o 
   UNUSED   000030 ........ ........    Write_IIC_Command OLED_IIC_initiative.o 
   UNUSED   000030 ........ ........    Write_IIC_Data OLED_IIC_initiative.o 
   UNUSED   000058 ........ ........    OLED_WR_Byte OLED_IIC_initiative.o 
   UNUSED   000020 ........ ........    Delay_50ms OLED_IIC_initiative.o 
-  00002200 000088 00023200 00003200  2 OLED_Set_Pos 	OLED_IIC_initiative.o 
+  0000227c 000088 0002327c 0000327c  2 OLED_Set_Pos 	OLED_IIC_initiative.o 
   UNUSED   000062 ........ ........    OLED_Display_On OLED_IIC_initiative.o 
   UNUSED   000062 ........ ........    OLED_Display_Off OLED_IIC_initiative.o 
-  00002288 0000b6 00023288 00003288  2 OLED_Clear 	OLED_IIC_initiative.o 
+  00002304 0000b6 00023304 00003304  2 OLED_Clear 	OLED_IIC_initiative.o 
   UNUSED   0000a8 ........ ........    OLED_On OLED_IIC_initiative.o 
-  0000233e 000022 0002333e 0000333e  2 oled_pow 	OLED_IIC_initiative.o 
-  00002360 000142 00023360 00003360  2 OLED_ShowChar 	OLED_IIC_initiative.o 
-  000024a2 0000cc 000234a2 000034a2  2 OLED_ShowNum 	OLED_IIC_initiative.o 
-  0000256e 00005c 0002356e 0000356e  2 OLED_ShowString 	OLED_IIC_initiative.o 
-  000025ca 0000ce 000235ca 000035ca  2 OLED_ShowCHinese 	OLED_IIC_initiative.o 
+  000023ba 000022 000233ba 000033ba  2 oled_pow 	OLED_IIC_initiative.o 
+  000023dc 000142 000233dc 000033dc  2 OLED_ShowChar 	OLED_IIC_initiative.o 
+  0000251e 0000cc 0002351e 0000351e  2 OLED_ShowNum 	OLED_IIC_initiative.o 
+  000025ea 00005c 000235ea 000035ea  2 OLED_ShowString 	OLED_IIC_initiative.o 
+  00002646 0000ce 00023646 00003646  2 OLED_ShowCHinese 	OLED_IIC_initiative.o 
   UNUSED   0000b4 ........ ........    OLED_DrawBMP OLED_IIC_initiative.o 
-  00002698 0002ee 00023698 00003698  2 OLED_Init 	OLED_IIC_initiative.o 
-  00002986 000000 00023986 00003986  1 .text.633 	OLED_IIC_initiative.o 
-  00002986 000064 00023986 00003986  1 .text 	Runtime.PPCEABI.VS.UC.a runtime.o
-  00002986 00004a 00023986 00003986  2 __save_gpr 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002714 0002ee 00023714 00003714  2 OLED_Init 	OLED_IIC_initiative.o 
+  00002a02 000000 00023a02 00003a02  1 .text.633 	OLED_IIC_initiative.o 
+  00002a02 000064 00023a02 00003a02  1 .text 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a02 00004a 00023a02 00003a02  2 __save_gpr 	Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _savegpr_14 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _save32gpr_14 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _savegpr_15 Runtime.PPCEABI.VS.UC.a runtime.o
@@ -444,7 +446,7 @@ Link map of __start
   UNUSED   000000 ........ ........    _save32gpr_28 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _savegpr_29 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _save32gpr_29 Runtime.PPCEABI.VS.UC.a runtime.o
-  000029c6 000000 000239c6 000039c6    _savegpr_30 (entry of __save_gpr) 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a42 000000 00023a42 00003a42    _savegpr_30 (entry of __save_gpr) 	Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _save32gpr_30 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _savegpr_31 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _save32gpr_31 Runtime.PPCEABI.VS.UC.a runtime.o
@@ -485,11 +487,11 @@ Link map of __start
   UNUSED   000000 ........ ........    _rest32gpr_30 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _restgpr_31 Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000000 ........ ........    _rest32gpr_31 Runtime.PPCEABI.VS.UC.a runtime.o
-  000029d0 000008 000239d0 000039d0  2 __restore_frame_and_exit 	Runtime.PPCEABI.VS.UC.a runtime.o
-  000029d2 000000 000239d2 000039d2    __finish_restore_frame_and_exit2 (entry of __restore_frame_and_exit) 	Runtime.PPCEABI.VS.UC.a runtime.o
-  000029d8 00000a 000239d8 000039d8  2 __restore_gpr_31_exit 	Runtime.PPCEABI.VS.UC.a runtime.o
-  000029de 000000 000239de 000039de    __finish_restore_frame_and_exit (entry of __restore_gpr_31_exit) 	Runtime.PPCEABI.VS.UC.a runtime.o
-  000029e2 000008 000239e2 000039e2  2 __restore_gpr_30_exit 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a4c 000008 00023a4c 00003a4c  2 __restore_frame_and_exit 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a4e 000000 00023a4e 00003a4e    __finish_restore_frame_and_exit2 (entry of __restore_frame_and_exit) 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a54 00000a 00023a54 00003a54  2 __restore_gpr_31_exit 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a5a 000000 00023a5a 00003a5a    __finish_restore_frame_and_exit (entry of __restore_gpr_31_exit) 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a5e 000008 00023a5e 00003a5e  2 __restore_gpr_30_exit 	Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000008 ........ ........    __restore_gpr_29_exit Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000008 ........ ........    __restore_gpr_28_exit Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   000008 ........ ........    __restore_gpr_27_exit Runtime.PPCEABI.VS.UC.a runtime.o
@@ -533,22 +535,22 @@ Link map of __start
   UNUSED   00001a ........ ........    __shl2i Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   00001a ........ ........    __shr2u Runtime.PPCEABI.VS.UC.a runtime.o
   UNUSED   00001c ........ ........    __shr2i Runtime.PPCEABI.VS.UC.a runtime.o
-  000029ea 000000 000239ea 000039ea  1 .text.205 	Runtime.PPCEABI.VS.UC.a runtime.o
-  000029ea 000006 000239f0 000039f0 16 *fill*
-  000029f0 000b86 000239f0 000039f0  1 .text 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002a66 000000 00023a66 00003a66  1 .text.205 	Runtime.PPCEABI.VS.UC.a runtime.o
+  00002a66 00000a 00023a70 00003a70 16 *fill*
+  00002a70 000b86 00023a70 00003a70  1 .text 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000018 ........ ........    _fp_round Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   00000a ........ ........    _fp_get_fpscr Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   00000a ........ ........    _fp_set_fpscr Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_utof Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  000029f0 000028 000239f0 000039f0 16 _f_itof 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002a70 000028 00023a70 00003a70 16 _f_itof 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    f_itof_common_with_proloque Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    f_itof_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    f_itof_go_coerce Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_ulltof Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   00003c ........ ........    _f_lltof Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    f_lltof_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002a20 000044 00023a20 00003a20 16 _f_qtof 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002a24 000000 00023a24 00003a24    _d_dtof (entry of _f_qtof) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002aa0 000044 00023aa0 00003aa0 16 _f_qtof 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002aa4 000000 00023aa4 00003aa4    _d_dtof (entry of _f_qtof) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_utod Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000012 ........ ........    _d_itod Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_itod_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
@@ -557,33 +559,33 @@ Link map of __start
   UNUSED   000000 ........ ........    d_Xtod_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_lltod_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_lltod_go_coerce Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002a70 000046 00023a70 00003a70 16 _f_ftod 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002af0 000046 00023af0 00003af0 16 _f_ftod 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    _f_ftoq Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000008 ........ ........    _f_ftoll Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_ftoull Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002ac0 000006 00023ac0 00003ac0 16 _f_ftou 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002ad0 000092 00023ad0 00003ad0 16 _f_ftoi 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002ad2 000000 00023ad2 00003ad2    f_toshortX_common (entry of _f_ftoi) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002aec 000000 00023aec 00003aec    Xtoshort_common (entry of _f_ftoi) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002b40 000006 00023b40 00003b40 16 _f_ftou 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002b50 000092 00023b50 00003b50 16 _f_ftoi 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002b52 000000 00023b52 00003b52    f_toshortX_common (entry of _f_ftoi) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002b6c 000000 00023b6c 00003b6c    Xtoshort_common (entry of _f_ftoi) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000008 ........ ........    _d_dtoll Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_dtoull Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_dtou Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002b70 0000c2 00023b70 00003b70 16 _d_dtoi 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002bf0 0000c2 00023bf0 00003bf0 16 _d_dtoi 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_toshortX_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002b86 000000 00023b86 00003b86    Xtolong_common (entry of _d_dtoi) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002c06 000000 00023c06 00003c06    Xtolong_common (entry of _d_dtoi) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_dtoq Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_qtod Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_cmp Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_cmpe Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c40 000006 00023c40 00003c40 16 _f_feq 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002cc0 000006 00023cc0 00003cc0 16 _f_feq 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_fne Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c50 000006 00023c50 00003c50 16 _f_flt 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c60 000006 00023c60 00003c60 16 _f_fle 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c70 000006 00023c70 00003c70 16 _f_fgt 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c80 000006 00023c80 00003c80 16 _f_fge 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002cd0 000006 00023cd0 00003cd0 16 _f_flt 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002ce0 000006 00023ce0 00003ce0 16 _f_fle 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002cf0 000006 00023cf0 00003cf0 16 _f_fgt 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002d00 000006 00023d00 00003d00 16 _f_fge 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_fun Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c90 00003e 00023c90 00003c90 16 _f_for 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002c92 000000 00023c92 00003c92    f_compare (entry of _f_for) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002d10 00003e 00023d10 00003d10 16 _f_for 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002d12 000000 00023d12 00003d12    f_compare (entry of _f_for) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_cmp Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_cmpe Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_feq Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
@@ -593,88 +595,88 @@ Link map of __start
   UNUSED   000006 ........ ........    _d_fgt Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_fge Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _d_fun Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002cd0 000114 00023cd0 00003cd0 16 _d_for 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002d50 000114 00023d50 00003d50 16 _d_for 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_compare Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002d28 000000 00023d28 00003d28    compare_dispatch (entry of _d_for) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002d62 000000 00023d62 00003d62    f_compare_un (entry of _d_for) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002da8 000000 00023da8 00003da8    compare_dispatch (entry of _d_for) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002de2 000000 00023de2 00003de2    f_compare_un (entry of _d_for) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000006 ........ ........    _f_neg Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    _d_neg Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002df0 000156 00023df0 00003df0 16 _f_mul 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002e22 000000 00023e22 00003e22    f_coerce_result (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002e2a 000000 00023e2a 00003e2a    f_coerce_result_precalculated_data (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002ed2 000000 00023ed2 00003ed2    f_result_is_INF (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f20 000000 00023f20 00003f20    f_result_is_zero (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f2a 000000 00023f2a 00003f2a    f_both_NaNs (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f2e 000000 00023f2e 00003f2e    f_x_is_NaN (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f32 000000 00023f32 00003f32    f_result_is_Invalid (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f3c 000000 00023f3c 00003f3c    f_y_is_NaN (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f42 000000 00023f42 00003f42    f_result_is_x (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002f50 00006a 00023f50 00003f50 16 _f_div 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002fc0 000008 00023fc0 00003fc0 16 _f_sub 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002fd0 000116 00023fd0 00003fd0 16 _f_add 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00002fd2 000000 00023fd2 00003fd2    f_add_common (entry of _f_add) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002e70 000156 00023e70 00003e70 16 _f_mul 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002ea2 000000 00023ea2 00003ea2    f_coerce_result (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002eaa 000000 00023eaa 00003eaa    f_coerce_result_precalculated_data (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002f52 000000 00023f52 00003f52    f_result_is_INF (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002fa0 000000 00023fa0 00003fa0    f_result_is_zero (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002faa 000000 00023faa 00003faa    f_both_NaNs (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002fae 000000 00023fae 00003fae    f_x_is_NaN (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002fb2 000000 00023fb2 00003fb2    f_result_is_Invalid (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002fbc 000000 00023fbc 00003fbc    f_y_is_NaN (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002fc2 000000 00023fc2 00003fc2    f_result_is_x (entry of _f_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00002fd0 00006a 00023fd0 00003fd0 16 _f_div 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003040 000008 00024040 00004040 16 _f_sub 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003050 000116 00024050 00004050 16 _f_add 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003052 000000 00024052 00004052    f_add_common (entry of _f_add) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000008 ........ ........    _d_sub Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   00018a ........ ........    _d_add Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_add_common Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  000030f0 0001ee 000240f0 000040f0 16 _d_mul 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003170 0001ee 00024170 00004170 16 _d_mul 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_coerce_result_prepare Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  0000315c 000000 0002415c 0000415c    d_coerce_result (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000031dc 000000 000241dc 000041dc    d_coerce_result (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_coerce_result_precalculated_data Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003226 000000 00024226 00004226    d_double_result_and_exit (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003232 000000 00024232 00004232    d_result_is_INF (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003284 000000 00024284 00004284    d_result_is_zero (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000032a6 000000 000242a6 000042a6    d_double_result_and_exit (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000032b2 000000 000242b2 000042b2    d_result_is_INF (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003304 000000 00024304 00004304    d_result_is_zero (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_both_NaNs Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_x_is_NaN Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  0000329c 000000 0002429c 0000429c    d_result_is_Invalid (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  0000331c 000000 0002431c 0000431c    d_result_is_Invalid (entry of _d_mul) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_y_is_NaN Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_result_is_x Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   000000 ........ ........    d_result_is_number_x Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  000032e0 0000a2 000242e0 000042e0 16 divu_l_r3_r4_r5 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003360 0000a2 00024360 00004360 16 divu_l_r3_r4_r5 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
   UNUSED   00010a ........ ........    _d_div Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003390 00009a 00024390 00004390 16 f_unpack_1 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003398 000000 00024398 00004398    f_unpack_2 (entry of f_unpack_1) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003430 0000f6 00024430 00004430 16 d_unpack_1 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003438 000000 00024438 00004438    d_unpack_2 (entry of d_unpack_1) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003530 00002e 00024530 00004530 16 load_rounding_0x2000 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003534 000000 00024534 00004534    load_rounding_0x0200 (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003538 000000 00024538 00004538    load_rounding_0x1200 (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  0000353c 000000 0002453c 0000453c    load_rounding_0x0a00 (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003542 000000 00024542 00004542    load_rounding_cr_simple (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003544 000000 00024544 00004544    load_rounding_cr (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00003560 000016 00024560 00004560 16 proloque 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  0000356a 000000 0002456a 0000456a    epiloque (entry of proloque) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003410 00009a 00024410 00004410 16 f_unpack_1 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00003418 000000 00024418 00004418    f_unpack_2 (entry of f_unpack_1) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000034b0 0000f6 000244b0 000044b0 16 d_unpack_1 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000034b8 000000 000244b8 000044b8    d_unpack_2 (entry of d_unpack_1) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035b0 00002e 000245b0 000045b0 16 load_rounding_0x2000 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035b4 000000 000245b4 000045b4    load_rounding_0x0200 (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035b8 000000 000245b8 000045b8    load_rounding_0x1200 (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035bc 000000 000245bc 000045bc    load_rounding_0x0a00 (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035c2 000000 000245c2 000045c2    load_rounding_cr_simple (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035c4 000000 000245c4 000045c4    load_rounding_cr (entry of load_rounding_0x2000) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035e0 000016 000245e0 000045e0 16 proloque 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  000035ea 000000 000245ea 000045ea    epiloque (entry of proloque) 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
 
 
 .init section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 0000a8 00024578 00004578  1 .init 	Linker Generated Symbol File 
-  00000000 000090 00024578 00004578  4 _rom_copy_info 	Linker Generated Symbol File 
-  00000090 000018 00024608 00004608  4 _bss_init_info 	Linker Generated Symbol File 
+  00000000 0000a8 000245f8 000045f8  1 .init 	Linker Generated Symbol File 
+  00000000 000090 000245f8 000045f8  4 _rom_copy_info 	Linker Generated Symbol File 
+  00000090 000018 00024688 00004688  4 _bss_init_info 	Linker Generated Symbol File 
 
 
 .init_vle section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 00000a 00024620 00004620  1 .init 	MPC55xx_init.o 
-  00000000 00000a 00024620 00004620  2 usr_init 	MPC55xx_init.o 
-  0000000a 000000 0002462a 0000462a  1 .init.10 	MPC55xx_init.o 
-  0000000a 000036 0002462a 0000462a  1 .init 	__ppc_eabi_init.o 
-  0000000a 000014 0002462a 0000462a  2 __init_hardware 	__ppc_eabi_init.o 
-  0000001e 000022 0002463e 0000463e  2 __flush_cache 	__ppc_eabi_init.o 
-  00000040 0000ea 00024660 00004660  1 .init 	Runtime.PPCEABI.VS.UC.a __start.o
-  00000040 000048 00024660 00004660  4 __start 	Runtime.PPCEABI.VS.UC.a __start.o
-  00000088 00002c 000246a8 000046a8  2 __copy_rom_section 	Runtime.PPCEABI.VS.UC.a __start.o
+  00000000 00000a 000246a0 000046a0  1 .init 	MPC55xx_init.o 
+  00000000 00000a 000246a0 000046a0  2 usr_init 	MPC55xx_init.o 
+  0000000a 000000 000246aa 000046aa  1 .init.10 	MPC55xx_init.o 
+  0000000a 000036 000246aa 000046aa  1 .init 	__ppc_eabi_init.o 
+  0000000a 000014 000246aa 000046aa  2 __init_hardware 	__ppc_eabi_init.o 
+  0000001e 000022 000246be 000046be  2 __flush_cache 	__ppc_eabi_init.o 
+  00000040 0000ea 000246e0 000046e0  1 .init 	Runtime.PPCEABI.VS.UC.a __start.o
+  00000040 000048 000246e0 000046e0  4 __start 	Runtime.PPCEABI.VS.UC.a __start.o
+  00000088 00002c 00024728 00004728  2 __copy_rom_section 	Runtime.PPCEABI.VS.UC.a __start.o
   UNUSED   00000e ........ ........    __init_bss_section Runtime.PPCEABI.VS.UC.a __start.o
-  000000b4 00001a 000246d4 000046d4  2 __init_registers 	Runtime.PPCEABI.VS.UC.a __start.o
-  000000ce 00005c 000246ee 000046ee  2 __init_data 	Runtime.PPCEABI.VS.UC.a __start.o
-  0000012a 000000 0002474a 0000474a  1 .init.130 	Runtime.PPCEABI.VS.UC.a __start.o
-  0000012a 0000ca 0002474a 0000474a  1 .init 	Runtime.PPCEABI.VS.UC.a __mem.o
-  0000012a 000038 0002474a 0000474a  2 memcpy 	Runtime.PPCEABI.VS.UC.a __mem.o
-  00000162 000078 00024782 00004782  2 __fill_mem 	Runtime.PPCEABI.VS.UC.a __mem.o
-  000001da 00001a 000247fa 000047fa  2 memset 	Runtime.PPCEABI.VS.UC.a __mem.o
+  000000b4 00001a 00024754 00004754  2 __init_registers 	Runtime.PPCEABI.VS.UC.a __start.o
+  000000ce 00005c 0002476e 0000476e  2 __init_data 	Runtime.PPCEABI.VS.UC.a __start.o
+  0000012a 000000 000247ca 000047ca  1 .init.130 	Runtime.PPCEABI.VS.UC.a __start.o
+  0000012a 0000ca 000247ca 000047ca  1 .init 	Runtime.PPCEABI.VS.UC.a __mem.o
+  0000012a 000038 000247ca 000047ca  2 memcpy 	Runtime.PPCEABI.VS.UC.a __mem.o
+  00000162 000078 00024802 00004802  2 __fill_mem 	Runtime.PPCEABI.VS.UC.a __mem.o
+  000001da 00001a 0002487a 0000487a  2 memset 	Runtime.PPCEABI.VS.UC.a __mem.o
 
 
 .ctors section layout
@@ -693,20 +695,20 @@ Link map of __start
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 000818 00024818 00004818  1 .rodata 	OLED_IIC_initiative.o 
-  00000000 000228 00024818 00004818  8 F6x8 	OLED_IIC_initiative.o 
-  00000228 0005f0 00024a40 00004a40  8 F8X16 	OLED_IIC_initiative.o 
+  00000000 000818 00024898 00004898  1 .rodata 	OLED_IIC_initiative.o 
+  00000000 000228 00024898 00004898  8 F6x8 	OLED_IIC_initiative.o 
+  00000228 0005f0 00024ac0 00004ac0  8 F8X16 	OLED_IIC_initiative.o 
 
 
 .sdata2 section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 000014 00025030 00005030  1 .sdata2 	main.o 
-  00000000 000008 00025030 00005030  8 @321 	main.o 
-  00000008 000004 00025038 00005038  4 @322 	main.o 
-  0000000c 000004 0002503c 0000503c  4 @786 	main.o 
-  00000010 000004 00025040 00005040  4 @1307 	main.o 
+  00000000 000014 000250b0 000050b0  1 .sdata2 	main.o 
+  00000000 000008 000250b0 000050b0  8 @321 	main.o 
+  00000008 000004 000250b8 000050b8  4 @322 	main.o 
+  0000000c 000004 000250bc 000050bc  4 @786 	main.o 
+  00000010 000004 000250c0 000050c0  4 @1307 	main.o 
 
 
 extab section layout
@@ -725,14 +727,14 @@ extabindex section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 000064 40000000 00005048  1 .data 	main.o 
+  00000000 000064 40000000 000050c8  1 .data 	main.o 
   UNUSED   00000a ........ ........    P main.o 
-  00000000 00000b 40000000 00005048  4 @103 	main.o 
-  0000000c 000009 4000000c 00005054  4 @104 	main.o 
-  00000018 000009 40000018 00005060  4 @105 	main.o 
-  00000024 00000a 40000024 0000506c  4 @106 	main.o 
-  00000030 00000d 40000030 00005078  4 @107 	main.o 
-  00000040 000024 40000040 00005088  4 @109 	main.o 
+  00000000 00000b 40000000 000050c8  4 @103 	main.o 
+  0000000c 000009 4000000c 000050d4  4 @104 	main.o 
+  00000018 000009 40000018 000050e0  4 @105 	main.o 
+  00000024 00000a 40000024 000050ec  4 @106 	main.o 
+  00000030 00000d 40000030 000050f8  4 @107 	main.o 
+  00000040 000024 40000040 00005108  4 @109 	main.o 
   UNUSED   00000d ........ ........    @165 main.o 
   UNUSED   00000e ........ ........    @182 main.o 
   UNUSED   00000f ........ ........    @763 main.o 
@@ -743,118 +745,119 @@ extabindex section layout
   UNUSED   00001c ........ ........    KDdan main.o 
   UNUSED   0000c4 ........ ........    KPrule main.o 
   UNUSED   0000c4 ........ ........    KDrule main.o 
-  00000064 000004 40000068 000050b0  8 *fill*
-  00000068 0002c0 40000068 000050b0  1 .data 	OLED_IIC_initiative.o 
-  00000068 0002c0 40000068 000050b0  8 Hzk 	OLED_IIC_initiative.o 
+  00000064 000004 40000068 00005130  8 *fill*
+  00000068 0002c0 40000068 00005130  1 .data 	OLED_IIC_initiative.o 
+  00000068 0002c0 40000068 00005130  8 Hzk 	OLED_IIC_initiative.o 
 
 
 .sdata section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 000038 40000328 00005370  1 .sdata 	main.o 
-  00000000 000004 40000328 00005370  4 Distance 	main.o 
-  00000004 000004 4000032c 00005374  4 Thread 	main.o 
-  00000008 000004 40000330 00005378  4 thread 	main.o 
-  00000010 000008 40000338 00005380  8 @35 	main.o 
-  00000018 000003 40000340 00005388  4 @102 	main.o 
-  00000020 000008 40000348 00005390  8 @108 	main.o 
-  00000028 000005 40000350 00005398  4 @139 	main.o 
-  00000030 000005 40000358 000053a0  4 @140 	main.o 
-  00000035 000001 4000035d 000053a5  1 period_sum_times 	main.o 
-  00000036 000001 4000035e 000053a6  1 Max_Cross 	main.o 
-  00000037 000001 4000035f 000053a7  1 Position_Old 	main.o 
+  00000000 000038 40000328 000053f0  1 .sdata 	main.o 
+  00000000 000004 40000328 000053f0  4 Distance 	main.o 
+  00000004 000004 4000032c 000053f4  4 Thread 	main.o 
+  00000008 000004 40000330 000053f8  4 thread 	main.o 
+  00000010 000008 40000338 00005400  8 @35 	main.o 
+  00000018 000003 40000340 00005408  4 @102 	main.o 
+  00000020 000008 40000348 00005410  8 @108 	main.o 
+  00000028 000005 40000350 00005418  4 @139 	main.o 
+  00000030 000005 40000358 00005420  4 @140 	main.o 
+  00000035 000001 4000035d 00005425  1 period_sum_times 	main.o 
+  00000036 000001 4000035e 00005426  1 Max_Cross 	main.o 
+  00000037 000001 4000035f 00005427  1 Position_Old 	main.o 
 
 
 .sbss section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 0000a0 40000360 000053a8  1 .sbss 	main.o 
-  00000000 000004 40000360 000053a8  4 ErrorRate 	main.o 
-  00000004 000004 40000364 000053ac  4 ErrorFit 	main.o 
-  00000008 000004 40000368 000053b0  4 Error 	main.o 
-  0000000c 000004 4000036c 000053b4  4 LastError1 	main.o 
-  00000010 000004 40000370 000053b8  4 ErrorP 	main.o 
-  00000014 000004 40000374 000053bc  4 LastErrorP 	main.o 
-  00000018 000004 40000378 000053c0  4 ErrorVP 	main.o 
-  0000001c 000004 4000037c 000053c4  4 LastErrorVP 	main.o 
-  00000020 000004 40000380 000053c8  4 ErrorV 	main.o 
-  00000024 000004 40000384 000053cc  4 LastErrorV 	main.o 
-  00000028 000004 40000388 000053d0  4 LastError 	main.o 
-  0000002c 000002 4000038c 000053d4  2 ADC_flag 	main.o 
+  00000000 0000a4 40000360 00005428  1 .sbss 	main.o 
+  00000000 000004 40000360 00005428  4 ErrorRate 	main.o 
+  00000004 000004 40000364 0000542c  4 ErrorFit 	main.o 
+  00000008 000004 40000368 00005430  4 LastErrorFit 	main.o 
+  0000000c 000004 4000036c 00005434  4 Error 	main.o 
+  00000010 000004 40000370 00005438  4 LastError1 	main.o 
+  00000014 000004 40000374 0000543c  4 ErrorP 	main.o 
+  00000018 000004 40000378 00005440  4 LastErrorP 	main.o 
+  0000001c 000004 4000037c 00005444  4 ErrorVP 	main.o 
+  00000020 000004 40000380 00005448  4 LastErrorVP 	main.o 
+  00000024 000004 40000384 0000544c  4 ErrorV 	main.o 
+  00000028 000004 40000388 00005450  4 LastErrorV 	main.o 
+  0000002c 000004 4000038c 00005454  4 LastError 	main.o 
+  00000030 000002 40000390 00005458  2 ADC_flag 	main.o 
   UNUSED   000004 ........ ........    laserror main.o 
-  0000002e 000001 4000038e 000053d6  1 Position 	main.o 
-  00000030 000004 40000390 000053d8  4 dir 	main.o 
-  00000034 000004 40000394 000053dc  4 yy_overflow 	main.o 
-  00000038 000004 40000398 000053e0  4 EMIOS0_overflow_times 	main.o 
+  00000032 000001 40000392 0000545a  1 Position 	main.o 
+  00000034 000004 40000394 0000545c  4 dir 	main.o 
+  00000038 000004 40000398 00005460  4 yy_overflow 	main.o 
+  0000003c 000004 4000039c 00005464  4 EMIOS0_overflow_times 	main.o 
   UNUSED   000002 ........ ........    EMIOS0_overflow_times_Dis main.o 
-  0000003c 000004 4000039c 000053e4  4 distance_time 	main.o 
-  00000040 000004 400003a0 000053e8  4 Distance_Count 	main.o 
+  00000040 000004 400003a0 00005468  4 distance_time 	main.o 
+  00000044 000004 400003a4 0000546c  4 Distance_Count 	main.o 
   UNUSED   000004 ........ ........    per_distance_time main.o 
-  00000044 000004 400003a4 000053ec  4 distance_bian 	main.o 
-  00000048 000004 400003a8 000053f0  4 Car_Distance 	main.o 
-  0000004c 000004 400003ac 000053f4  4 per_distance 	main.o 
-  00000050 000004 400003b0 000053f8  4 sum_distance 	main.o 
-  00000054 000001 400003b4 000053fc  1 flage_tiaosu 	main.o 
-  00000055 000001 400003b5 000053fd  1 EMIOS0_overflow_times_Cesu 	main.o 
-  00000056 000002 400003b6 000053fe  2 smartcar_speed 	main.o 
-  00000058 000002 400003b8 00005400  2 count_now 	main.o 
-  0000005a 000002 400003ba 00005402  2 count_last 	main.o 
-  0000005c 000002 400003bc 00005404  2 smartcar_speed_0 	main.o 
-  0000005e 000002 400003be 00005406  2 smartcar_speed_1 	main.o 
-  00000060 000002 400003c0 00005408  2 smartcar_speed_time 	main.o 
-  00000064 000004 400003c4 0000540c  4 period_sum 	main.o 
-  00000068 000004 400003c8 00005410  4 yi 	main.o 
-  0000006c 000004 400003cc 00005414  4 jishuA 	main.o 
-  00000070 000004 400003d0 00005418  4 distance_yy 	main.o 
-  00000074 000004 400003d4 0000541c  4 period_yy 	main.o 
-  00000078 000004 400003d8 00005420  4 lastdistance_yy 	main.o 
+  00000048 000004 400003a8 00005470  4 distance_bian 	main.o 
+  0000004c 000004 400003ac 00005474  4 Car_Distance 	main.o 
+  00000050 000004 400003b0 00005478  4 per_distance 	main.o 
+  00000054 000004 400003b4 0000547c  4 sum_distance 	main.o 
+  00000058 000001 400003b8 00005480  1 flage_tiaosu 	main.o 
+  00000059 000001 400003b9 00005481  1 EMIOS0_overflow_times_Cesu 	main.o 
+  0000005a 000002 400003ba 00005482  2 smartcar_speed 	main.o 
+  0000005c 000002 400003bc 00005484  2 count_now 	main.o 
+  0000005e 000002 400003be 00005486  2 count_last 	main.o 
+  00000060 000002 400003c0 00005488  2 smartcar_speed_0 	main.o 
+  00000062 000002 400003c2 0000548a  2 smartcar_speed_1 	main.o 
+  00000064 000002 400003c4 0000548c  2 smartcar_speed_time 	main.o 
+  00000068 000004 400003c8 00005490  4 period_sum 	main.o 
+  0000006c 000004 400003cc 00005494  4 yi 	main.o 
+  00000070 000004 400003d0 00005498  4 jishuA 	main.o 
+  00000074 000004 400003d4 0000549c  4 distance_yy 	main.o 
+  00000078 000004 400003d8 000054a0  4 period_yy 	main.o 
+  0000007c 000004 400003dc 000054a4  4 lastdistance_yy 	main.o 
   UNUSED   000002 ........ ........    gao_wei main.o 
   UNUSED   000002 ........ ........    di_wei main.o 
-  0000007c 000001 400003dc 00005424  1 MOTE 	main.o 
-  0000007d 000001 400003dd 00005425  1 gaowei_flag 	main.o 
-  0000007e 000001 400003de 00005426  1 diwei_flag 	main.o 
-  00000080 000002 400003e0 00005428  2 R_flag 	main.o 
+  00000080 000001 400003e0 000054a8  1 MOTE 	main.o 
+  00000081 000001 400003e1 000054a9  1 gaowei_flag 	main.o 
+  00000082 000001 400003e2 000054aa  1 diwei_flag 	main.o 
+  00000084 000002 400003e4 000054ac  2 R_flag 	main.o 
   UNUSED   000001 ........ ........    AD_Filtering_Pointer main.o 
   UNUSED   000001 ........ ........    Error_Filtering_Pointer main.o 
   UNUSED   000004 ........ ........    Limit_Error main.o 
   UNUSED   000004 ........ ........    Errorall main.o 
-  00000082 000001 400003e2 0000542a  1 markerror_pointer 	main.o 
+  00000086 000001 400003e6 000054ae  1 markerror_pointer 	main.o 
   UNUSED   000001 ........ ........    count_markerror main.o 
-  00000084 000002 400003e4 0000542c  2 Max_Old 	main.o 
+  00000088 000002 400003e8 000054b0  2 Max_Old 	main.o 
   UNUSED   000004 ........ ........    ErrorM main.o 
   UNUSED   000001 ........ ........    StopCarCount main.o 
   UNUSED   000001 ........ ........    flag main.o 
   UNUSED   000001 ........ ........    ju main.o 
   UNUSED   000001 ........ ........    ju1 main.o 
-  00000088 000004 400003e8 00005430  4 Steer_output 	main.o 
+  0000008c 000004 400003ec 000054b4  4 Steer_output 	main.o 
   UNUSED   000001 ........ ........    bb main.o 
-  0000008c 000001 400003ec 00005434  1 aa 	main.o 
-  0000008d 000001 400003ed 00005435  1 ia 	main.o 
-  00000090 000004 400003f0 00005438  4 time_y_y 	main.o 
-  00000094 000004 400003f4 0000543c  4 smartcar_speed_temp 	main.o 
-  00000098 000004 400003f8 00005440  4 period 	main.o 
-  0000009c 000004 400003fc 00005444  4 count 	main.o 
+  00000090 000001 400003f0 000054b8  1 aa 	main.o 
+  00000091 000001 400003f1 000054b9  1 ia 	main.o 
+  00000094 000004 400003f4 000054bc  4 time_y_y 	main.o 
+  00000098 000004 400003f8 000054c0  4 smartcar_speed_temp 	main.o 
+  0000009c 000004 400003fc 000054c4  4 period 	main.o 
+  000000a0 000004 40000400 000054c8  4 count 	main.o 
 
 
 .bss section layout
   Starting        Virtual  File
   address  Size   address  offset
   ---------------------------------
-  00000000 000148 40000400 000053a8  1 .bss 	main.o 
-  00000000 00000c 40000400 000053a8  4 ADaverage 	main.o 
-  0000000c 000014 4000040c 000053b4  4 time_yy 	main.o 
+  00000000 000148 40000408 00005428  1 .bss 	main.o 
+  00000000 00000c 40000408 00005428  4 ADaverage 	main.o 
+  0000000c 000014 40000414 00005434  4 time_yy 	main.o 
   UNUSED   000014 ........ ........    last_gao main.o 
   UNUSED   000014 ........ ........    last_di main.o 
-  00000020 00000c 40000420 000053c8  4 DATAshou 	main.o 
+  00000020 00000c 40000428 00005448  4 DATAshou 	main.o 
   UNUSED   00001e ........ ........    arrAD_Filter main.o 
   UNUSED   000014 ........ ........    arrFilter_Error main.o 
-  00000030 0000c8 40000430 000053d8  8 MarkError 	main.o 
-  000000f8 000014 400004f8 000054a0  4 PAR 	main.o 
-  0000010c 00003c 4000050c 000054b4  4 PID 	main.o 
-  00000148 000004 40000548 000054f0  1 .bss 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-  00000148 000004 40000548 000054f0  4 __SoftFPSCR 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00000030 0000c8 40000438 00005458  8 MarkError 	main.o 
+  000000f8 000014 40000500 00005520  4 PAR 	main.o 
+  0000010c 00003c 40000514 00005534  4 PID 	main.o 
+  00000148 000004 40000550 00005570  1 .bss 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
+  00000148 000004 40000550 00005570  4 __SoftFPSCR 	Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
 
 
 .PPC.EMB.sdata0 section layout
@@ -877,28 +880,28 @@ Memory map:
   .intc_hw_branch_table 000100f4 00000000 00000800 000100f4 000100f4          0
         .ivor_handlers 00010100 000000b0 00000450 00010100 00010100         16
   .intc_sw_isr_vector_table 00020000 000003d4 00000800 00020000 00020000         25
-             .text_vle 00021000 00003578 00001000 00021000 00021000         74
-                 .init 00024578 000000a8 00004578 00024578 00024578        759
-             .init_vle 00024620 000001f4 00004620 00024620 00024620        768
-                .ctors 00024814 00000000 00004814 00024814 00024814          0
-                .dtors 00024814 00000000 00004814 00024814 00024814          0
-               .rodata 00024818 00000818 00004818 00024818 00024818        793
-               .sdata2 00025030 00000014 00005030 00025030 00025030        897
-                 extab 00025044 00000000 00005044 00025044 00025044          0
-            extabindex 00025044 00000000 00005044 00025044 00025044          0
-                 .data 40000000 00000328 00005048 00025048 00025048        898
-                .sdata 40000328 00000038 00005370 00025370 00025370        939
-                 .sbss 40000360 000000a0 000053a8 000253a8 000253a8          0
-                  .bss 40000400 0000014c 000053a8 000253a8 000253a8          0
-       .PPC.EMB.sdata0 4000054c 00000000 000053a8 000253a8 000253a8          0
-        .PPC.EMB.sbss0 4000054c 00000000 000053a8 000253a8 000253a8          0
-      .PPC.EMB.apuinfo 00009b80 00000000 0000ef30 0002ef28 0002ef28          0
-         .debug_abbrev          00000147 000053a8
-           .debug_info          00002eb3 000054ef
-        .debug_aranges          00000040 000083a2
-           .debug_line          0000330e 000083e2
-            .debug_loc          00001104 0000b6f0
-       .debug_pubnames          0000092b 0000c7f4
+             .text_vle 00021000 000035f8 00001000 00021000 00021000         74
+                 .init 000245f8 000000a8 000045f8 000245f8 000245f8        765
+             .init_vle 000246a0 000001f4 000046a0 000246a0 000246a0        774
+                .ctors 00024894 00000000 00004894 00024894 00024894          0
+                .dtors 00024894 00000000 00004894 00024894 00024894          0
+               .rodata 00024898 00000818 00004898 00024898 00024898        799
+               .sdata2 000250b0 00000014 000050b0 000250b0 000250b0        903
+                 extab 000250c4 00000000 000050c4 000250c4 000250c4          0
+            extabindex 000250c4 00000000 000050c4 000250c4 000250c4          0
+                 .data 40000000 00000328 000050c8 000250c8 000250c8        904
+                .sdata 40000328 00000038 000053f0 000253f0 000253f0        945
+                 .sbss 40000360 000000a4 00005428 00025428 00025428          0
+                  .bss 40000408 0000014c 00005428 00025428 00025428          0
+       .PPC.EMB.sdata0 40000554 00000000 00005428 00025428 00025428          0
+        .PPC.EMB.sbss0 40000554 00000000 00005428 00025428 00025428          0
+      .PPC.EMB.apuinfo 00009cfc 00000000 0000f130 0002f124 0002f124          0
+         .debug_abbrev          00000147 00005428
+           .debug_info          00002f62 0000556f
+        .debug_aranges          00000040 000084d1
+           .debug_line          0000333a 00008511
+            .debug_loc          00001150 0000b84b
+       .debug_pubnames          0000094b 0000c99b
 
 
 Linker generated symbols:
@@ -921,53 +924,53 @@ _f_intc_sw_isr_vector_table_rom 00020000
 _e_intc_sw_isr_vector_table 000203d4
               _f_text_vle 00021000
           _f_text_vle_rom 00021000
-              _e_text_vle 00024578
-                  _f_init 00024578
-              _f_init_rom 00024578
-                  _e_init 00024620
-              _f_init_vle 00024620
-          _f_init_vle_rom 00024620
-              _e_init_vle 00024814
-                 _f_ctors 00024814
-             _f_ctors_rom 00024814
-                 _e_ctors 00024814
-                 _f_dtors 00024814
-             _f_dtors_rom 00024814
-                 _e_dtors 00024814
-                _f_rodata 00024818
-            _f_rodata_rom 00024818
-                _e_rodata 00025030
-                _f_sdata2 00025030
-            _f_sdata2_rom 00025030
-                _e_sdata2 00025044
-                  _fextab 00025044
-              _fextab_rom 00025044
-                  _eextab 00025044
-             _fextabindex 00025044
-         _fextabindex_rom 00025044
-             _eextabindex 00025044
+              _e_text_vle 000245f8
+                  _f_init 000245f8
+              _f_init_rom 000245f8
+                  _e_init 000246a0
+              _f_init_vle 000246a0
+          _f_init_vle_rom 000246a0
+              _e_init_vle 00024894
+                 _f_ctors 00024894
+             _f_ctors_rom 00024894
+                 _e_ctors 00024894
+                 _f_dtors 00024894
+             _f_dtors_rom 00024894
+                 _e_dtors 00024894
+                _f_rodata 00024898
+            _f_rodata_rom 00024898
+                _e_rodata 000250b0
+                _f_sdata2 000250b0
+            _f_sdata2_rom 000250b0
+                _e_sdata2 000250c4
+                  _fextab 000250c4
+              _fextab_rom 000250c4
+                  _eextab 000250c4
+             _fextabindex 000250c4
+         _fextabindex_rom 000250c4
+             _eextabindex 000250c4
                   _f_data 40000000
-              _f_data_rom 00025048
+              _f_data_rom 000250c8
                   _e_data 40000328
                  _f_sdata 40000328
-             _f_sdata_rom 00025370
+             _f_sdata_rom 000253f0
                  _e_sdata 40000360
                   _f_sbss 40000360
-                  _e_sbss 40000400
-                   _f_bss 40000400
-                   _e_bss 4000054c
-        _f_PPC_EMB_sdata0 4000054c
-    _f_PPC_EMB_sdata0_rom 000253a8
-        _e_PPC_EMB_sdata0 4000054c
-         _f_PPC_EMB_sbss0 4000054c
-         _e_PPC_EMB_sbss0 4000054c
+                  _e_sbss 40000404
+                   _f_bss 40000408
+                   _e_bss 40000554
+        _f_PPC_EMB_sdata0 40000554
+    _f_PPC_EMB_sdata0_rom 00025428
+        _e_PPC_EMB_sdata0 40000554
+         _f_PPC_EMB_sbss0 40000554
+         _e_PPC_EMB_sbss0 40000554
               _stack_addr 40008000
                _stack_end 40007c00
                _heap_addr 003cfff0
                 _heap_end 003d7ff0
-             _nbfunctions 0000005d
+             _nbfunctions 0000005e
            SIZEOF_HEADERS 00000340
                _SDA_BASE_ 40008328
-              _SDA2_BASE_ 0002d030
+              _SDA2_BASE_ 0002d0b0
            _ABS_SDA_BASE_ 40008328
-          _ABS_SDA2_BASE_ 0002d030
+          _ABS_SDA2_BASE_ 0002d0b0
