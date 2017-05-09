@@ -1362,7 +1362,29 @@ int Filter_Error( int nError )
 	ave = sum / ARR_FILER_ERROR_LENGTH;
 	return ave;
 }
-
+/***************************************赛道识别*******************************************/
+uint8_t CrossFlag=0;
+uint8_t StraightFlag=0;
+uint8_t	CircuitFlag=0;
+uint8_t CurveFlag=0;
+uint8_t EnterCurve=0;
+void TrackIdentification(int16_t *AD) {
+	if(AD[0]+AD[1]+AD[2]>330&&ABS(AD[3],AD[4])<70) {
+		StraightFlag=1;
+	}
+	if(AD[0]+AD[2]>240&&AD[3]+AD[4]>240&&ABS(AD[3],AD[4])<40) {
+		CrossFlag=1;
+	}
+	if(AD[1]>80&&AD[1]<180&&AD[3]>140||AD[4]>140&&ABS(AD[3],AD[4])>60) {
+		EnterCurve=1;
+	}
+	if(AD[0]+AD[3]-AD[2]-AD[4]>80&&AD[3]+AD[4]>90&&AD[3]+AD[4]<240||(ABS(AD[3],AD[4])>50&&AD[3]+AD[4]<140)) {
+		CurveFlag=0;
+	}
+	if(AD[0]+AD[2]>200&&AD[3]+AD[4]<90) {
+		CurveFlag=0;
+	}
+}
 /***************************************位置解算*******************************************/
 int Errorall=0;
 uint8_t markerror_pointer = 0;
@@ -1450,11 +1472,11 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	/*水平垂直偏差*/
 	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
 	/*垂直偏差*/
-	ErrorV=limit1(AD[4]-AD[3],-120,120);
+	ErrorV=limit1(AD[4]-AD[3],-100,100);
 /*------------------------------偏差融合----------------------------------*/
 	ErrorFit=((200-AD[1])*ErrorVP+2*AD[1]*ErrorP)/(200+AD[1]);
 /*------------------------------偏差权值计算----------------------------------*/
-    if(AD[1]>110) {
+    if(AD[1]>90) {
         WeightV=430-limit1(AD[3]+AD[4],200,400);
     } else {
        WeightV=ABS(AD[3],AD[4]);
@@ -1877,7 +1899,7 @@ int FuzzyKD() {
 
 /***********************************舵机控制************************************/
 int32_t Steer_output;
-inline void Servo_PD( ) {
+inline void Servo_PD(int16_t *AD ) {
 	int max = servo_mid+servo_max;
 	int min = servo_mid+servo_min;
 	/*
@@ -1885,11 +1907,19 @@ inline void Servo_PD( ) {
 	temp=AD[1]/20;
 	PAR.Steer_P=P[temp];
     */
-    ErrorRate=Least_Square_Method(20, MarkError,markerror_pointer+30);
+    //ErrorRate=Least_Square_Method(20, MarkError,markerror_pointer+30);
     //PAR.Steer_P=FuzzyKP();
     //PAR.Steer_D=FuzzyKD();
     Steer_output =  ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
     Steer_output = servo_mid + Steer_output/10;
+    
+    if(CrossFlag==1) {
+    	Steer_output=2*ErrorP;
+    } else if(AD[1]<90) {
+    	Steer_output=Steer_output;
+    } else {
+    	Steer_output=Steer_output/5;
+    }
     if( Steer_output > max )   
     	Steer_output = max;
     if( Steer_output < min )   
@@ -2007,7 +2037,7 @@ void main ( void )
     	Sampling( );
 		Normalization( ADaverage, Noise_Value, Max_Value, AD, 6 );
         Position_analyse_front( NormalizePT, Max_Value, AD ); 
-        Servo_PD();
+        Servo_PD(AD);
         if( flage_tiaosu ) {	
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
