@@ -406,7 +406,7 @@ inline int FindMax(int16_t* AD,int n) {
 /*-------------------------------------------------------------------*/
 int dir=0;
 inline int lost(float error,float Last,int16_t *AD) {
-	int min=10,max=40,i;
+	int min=10,max=60,i;
 	if(dir!=0) {
 		if(FindMax(AD,3)<=8&&ABS(AD[0],AD[2])<6)
 			error=Last;
@@ -1385,6 +1385,13 @@ void TrackIdentification(int16_t *AD) {
 		CurveFlag=0;
 	}
 }
+/***************************************环岛识别*******************************************/
+void CircuitIdentification(int16_t *AD) {
+	if(AD[3]<90&&AD[3]>20&&AD[4]<90&&AD[4]>20&&ABS(AD[3],AD[4])<30&&CircuitFlag==0)
+		CircuitFlag=1;	
+	else if(CircuitFlag==1&&AD[1]>110)
+		CircuitFlag=0;
+}
 /***************************************位置解算*******************************************/
 int Errorall=0;
 uint8_t markerror_pointer = 0;
@@ -2011,7 +2018,7 @@ void main ( void )
     enableIrq();
     
 
-	Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
+	//Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
     
     BEE_CONFIG = port_output;
     BEE_OUTPUT = LOW;
@@ -2021,11 +2028,11 @@ void main ( void )
     OLED_Init();	   //初始化OLED
     OLED_Clear( 0,7 );
     Desktop();
-    /*
+    
     PAR_init();      
     NoiseValue_init( Noise_Value );	
     Find_Transit_front( NormalizePT, Max_Value, Noise_Value );  
-    */
+    
     xianshi();
    	delay_ms( 100 );   //显示屏初始化需要一段延时 否则无法显示
     initI2C();         // IIC初始化
@@ -2042,16 +2049,14 @@ void main ( void )
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
 		}
-		/*
+		
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-       		OLED_ShowNum( 0,0,ABS(ErrorP,0),4,16 );
-			OLED_ShowNum( 40,0,AD[1],4,16 );	
-       		OLED_ShowNum( 80,0,ABS(ErrorVP,0),4,16 );
-       		OLED_ShowNum( 30,3,ABS(ErrorFit,0),4,16 );
-       		OLED_ShowNum( 60,3,ABS(ErrorV,0),4,16 );
-       		OLED_ShowNum( 40,6,ABS(Error,0),4,16 );
+       		OLED_ShowNum( 40,3,ABS(ErrorVP,0),4,16 );
+       		OLED_ShowNum( 40,6,ABS(ErrorV,0),4,16 );
+       		OLED_ShowNum( 20,0,AD[3],4,16 );
+       		OLED_ShowNum( 60,0,AD[4],4,16 );
        	}
-       	*/
+       	
         //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
