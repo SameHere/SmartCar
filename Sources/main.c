@@ -405,16 +405,17 @@ inline int FindMax(int16_t* AD,int n) {
 }
 /*-------------------------------------------------------------------*/
 int dir=0;
+uint16_t LostTime=0;
 inline int lost(float error,float Last,int16_t *AD) {
 	int min=10,max=60,i;
+	uint8_t value=FindMax(AD,3);
 	if(dir!=0) {
-		if(FindMax(AD,3)<=8&&ABS(AD[0],AD[2])<6)
+		if(value<=8&&ABS(AD[0],AD[2])<6)
 			error=Last;
 		if(dir==1&&AD[0]>=AD[2])
 			error=Last;
 		if(dir==-1&&AD[2]>=AD[0])
 			error=Last;
-		
 	}
 	if(AD[1]<min&&dir==0) {
 		if(error<0)
@@ -428,6 +429,13 @@ inline int lost(float error,float Last,int16_t *AD) {
 		error+=7;
 	else if(Last-error>7)
 		error-=7;
+	if(value<4) {
+		if(LostTime++>1500) {
+			PAR.Speed_Set=0;
+		}
+	} else {
+		LostTime=0;
+	}
 	
 	return error;
 	//if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
