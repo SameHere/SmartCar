@@ -426,6 +426,7 @@ inline int lost(float error,float Last,int16_t *AD) {
 		error+=7;
 	else if(Last-error>7)
 		error-=7;
+	/*
 	if(value<4) {
 		if(LostTime++>1500) {
 			PAR.Speed_Set=0;
@@ -433,7 +434,7 @@ inline int lost(float error,float Last,int16_t *AD) {
 	} else {
 		LostTime=0;
 	}
-	
+	*/
 	return error;
 	//if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
 
@@ -669,7 +670,7 @@ void EMIOS0_CH20_21_isr( void )
 //	SIU.GPDO[PCR38_PC6].R = !SIU.GPDO[PCR38_PC6].R;
 	
 	SIU.PCR[PCR66_PE2].R = port_input;
-	
+
     	if(SIU.GPDI[PCR66_PE2].R==0)
         {
         	distance_time=distance_time-2;
@@ -1399,7 +1400,11 @@ void CircuitIdentification(int16_t *AD) {
 }
 /***************************************十字识别*******************************************/
 void CrossIdentification(int16_t *AD) {
-	
+	if(CrossFlag==0&&(AD[0]+AD[2]>240&&AD[3]+AD[4]>240&&ABS(AD[3],AD[4])<40)||(AD[3]>100&&AD[4]>100)) {
+		CrossFlag=1;
+	} else if(CrossFlag==1) {
+		
+	}
 }
 /***************************************位置解算*******************************************/
 int Errorall=0;
@@ -1486,7 +1491,7 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	/*水平偏差*/
 	ErrorP=lost(((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread),(float)LastErrorP,AD);
 	/*水平垂直偏差*/
-	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3])+1)/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
+	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
 	/*垂直偏差*/
 	ErrorV=limit1(AD[4]-AD[3],-100,100);
 /*------------------------------偏差融合----------------------------------*/
@@ -1500,8 +1505,8 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	WeightFit=10+ABS(ErrorFit,0);
 	
 	//Error=(WeightFit*ErrorFit+WeightV*ErrorV)/(WeightFit+WeightV);
-	Error=ErrorP;
-	
+	//Error=ErrorP;
+	Error=ErrorFit;
 /*-----------------------------偏移量存储---------------------------------*/
 		
 	
@@ -2003,7 +2008,7 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=205;Max_Valu[1]=203;Max_Valu[2]=200;Max_Valu[3]=200;Max_Valu[4]=200;
+	Max_Valu[0]=205;Max_Valu[1]=203;Max_Valu[2]=200;Max_Valu[3]=210;Max_Valu[4]=210;
 	Noise_Value[0]=26;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=29;Noise_Value[4]=28;
 	NormalizePT[0]=51;NormalizePT[1]=53;
 	PAR.Speed_Set = 2300;
@@ -2045,9 +2050,7 @@ void main ( void )
     Find_Transit_front( NormalizePT, Max_Value, Noise_Value );  
     */
     xianshi();
-   	delay_ms( 100 );   //显示屏初始化需要一段延时 否则无法显示
-    initI2C();         // IIC初始化
-    OLED_Init();	   //初始化OLED
+    
     OLED_Clear( 0,7 );
     Car_Distance=0;
 
@@ -2060,11 +2063,12 @@ void main ( void )
 	    	Speed_PID( smartcar_speed, PAR.Speed_Set );
 	    	flage_tiaosu = 0;
 		}
-		
+		/*
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
        		OLED_ShowNum( 40,0,ABS(ErrorP,0),4,16 );
+			OLED_ShowNum( 40,3,ABS(ErrorVP,0),4,16 );
        	}
-       	
+       	*/
         //DisplaySwitch(AD);
         //sbq( ABS(Error,0), Position, Speed, smartcar_speed );
     	//StopCar();     
