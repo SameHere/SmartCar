@@ -407,15 +407,12 @@ inline int FindMax(int16_t* AD,int n) {
 int dir=0;
 uint16_t LostTime=0;
 inline int lost(float error,float Last,int16_t *AD) {
-	int min=10,max=60,i;
+	int min=30,max=80,i;
 	uint8_t value=FindMax(AD,3);
 	if(dir!=0) {
-		if(value<=8&&ABS(AD[0],AD[2])<6)
+		if((value<=8&&ABS(AD[0],AD[2])<6)||(dir==1&&AD[0]>=AD[2])||(dir==-1&&AD[2]>=AD[0])) {
 			error=Last;
-		if(dir==1&&AD[0]>=AD[2])
-			error=Last;
-		if(dir==-1&&AD[2]>=AD[0])
-			error=Last;
+		}
 	}
 	if(AD[1]<min&&dir==0) {
 		if(error<0)
@@ -1400,6 +1397,10 @@ void CircuitIdentification(int16_t *AD) {
 	else if(CircuitFlag==1&&AD[1]>110)
 		CircuitFlag=0;
 }
+/***************************************十字识别*******************************************/
+void CrossIdentification(int16_t *AD) {
+	
+}
 /***************************************位置解算*******************************************/
 int Errorall=0;
 uint8_t markerror_pointer = 0;
@@ -1485,20 +1486,21 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	/*水平偏差*/
 	ErrorP=lost(((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread),(float)LastErrorP,AD);
 	/*水平垂直偏差*/
-	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
+	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3])+1)/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
 	/*垂直偏差*/
 	ErrorV=limit1(AD[4]-AD[3],-100,100);
 /*------------------------------偏差融合----------------------------------*/
 	ErrorFit=((200-AD[1])*ErrorVP+2*AD[1]*ErrorP)/(200+AD[1]);
 /*------------------------------偏差权值计算----------------------------------*/
     if(AD[1]>90) {
-        WeightV=430-limit1(AD[3]+AD[4],200,400);
+    	WeightV=430-limit1(AD[3]+AD[4],200,400);
     } else {
-       WeightV=ABS(AD[3],AD[4]);
+    	WeightV=ABS(AD[3],AD[4]);
     }
 	WeightFit=10+ABS(ErrorFit,0);
 	
-	Error=(WeightFit*ErrorFit+WeightV*ErrorV)/(WeightFit+WeightV);
+	//Error=(WeightFit*ErrorFit+WeightV*ErrorV)/(WeightFit+WeightV);
+	Error=ErrorP;
 	
 /*-----------------------------偏移量存储---------------------------------*/
 		
@@ -1927,7 +1929,7 @@ inline void Servo_PD(int16_t *AD ) {
     //PAR.Steer_D=FuzzyKD();
     Steer_output =  ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
     Steer_output = servo_mid + Steer_output/10;
-    
+    /*
     if(CrossFlag==1) {
     	Steer_output=2*ErrorP;
     } else if(AD[1]<90) {
@@ -1935,6 +1937,7 @@ inline void Servo_PD(int16_t *AD ) {
     } else {
     	Steer_output=Steer_output/5;
     }
+    */
     if( Steer_output > max )   
     	Steer_output = max;
     if( Steer_output < min )   
@@ -2000,12 +2003,12 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=200;Max_Valu[4]=200;
+	Max_Valu[0]=205;Max_Valu[1]=203;Max_Valu[2]=200;Max_Valu[3]=200;Max_Valu[4]=200;
 	Noise_Value[0]=26;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=29;Noise_Value[4]=28;
 	NormalizePT[0]=51;NormalizePT[1]=53;
-	PAR.Speed_Set = 1900;
-	PAR.Steer_D = 240;
-	PAR.Steer_P = 180;
+	PAR.Speed_Set = 2300;
+	PAR.Steer_D = 310;
+	PAR.Steer_P = 300;
 }
 /*******************************主函数*******************************************/
 void main ( void )
@@ -2026,21 +2029,21 @@ void main ( void )
     enableIrq();
     
 
-	//Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
+	Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
     
-    BEE_CONFIG = port_output;
-    BEE_OUTPUT = LOW;
+    //BEE_CONFIG = port_output;
+    //BEE_OUTPUT = LOW;
 
     delay_ms( 1000 );   //显示屏初始化需要一段延时 否则无法显示
     initI2C();         // IIC初始化
     OLED_Init();	   //初始化OLED
     OLED_Clear( 0,7 );
     Desktop();
-    
+    /*
     PAR_init();      
     NoiseValue_init( Noise_Value );	
     Find_Transit_front( NormalizePT, Max_Value, Noise_Value );  
-    
+    */
     xianshi();
    	delay_ms( 100 );   //显示屏初始化需要一段延时 否则无法显示
     initI2C();         // IIC初始化
@@ -2059,10 +2062,7 @@ void main ( void )
 		}
 		
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-       		OLED_ShowNum( 40,3,ABS(ErrorVP,0),4,16 );
-       		OLED_ShowNum( 40,6,ABS(ErrorV,0),4,16 );
-       		OLED_ShowNum( 20,0,AD[3],4,16 );
-       		OLED_ShowNum( 60,0,AD[4],4,16 );
+       		OLED_ShowNum( 40,0,ABS(ErrorP,0),4,16 );
        	}
        	
         //DisplaySwitch(AD);
