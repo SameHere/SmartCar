@@ -23,6 +23,7 @@ uint16_t Extremum_Cut(uint16_t *pList, uint8_t index, uint8_t HeadCutNum, uint8_
 void motor_drive( int16_t zkb );
 void Show_Me_Data( uint16_t number_test,uint8_t change,uint8_t flag );
 float sqrt( float x );
+void CircuitIdentification(int16_t *AD);
 /*---------------------------------------------------------------------------------------*/
 #define   servo_pwm      EMIOS_0.CH[21].CBDR.R     //Maximal value is 13333
 #define   motor_pwm    	 EMIOS_0.CH[13].CBDR.R     //Maximal value is 8000
@@ -104,7 +105,7 @@ int thread=7;
 #define   BEE_OUTPUT                  SIU.GPDO[PCR47_PC15].R
 
 #define   SAMPLING_TIME                       15     //采样次数
-#define   ARR_MARKERROR_LENGTH                50
+#define   ARR_MARKERROR_LENGTH                35
 
 
 #define  port_output   0x0200                                                           //*
@@ -412,6 +413,39 @@ inline int lost(float error,float Last,int16_t *AD) {
 	uint8_t value=FindMax(AD,3);
 	if(dir!=0) {
 		if((value<=8&&ABS(AD[0],AD[2])<6)||(dir==1&&AD[0]>=AD[2])||(dir==-1&&AD[2]>=AD[0])) {
+			error=Last;
+		}
+	}
+	if(AD[1]<min&&dir==0) {
+		if(error<0)
+			dir=-1;
+		else if(error>0)
+			dir=1;
+	} else if(AD[1]>max) {
+		dir=0;	
+	}
+	if(error-Last>7)
+		error+=7;
+	else if(Last-error>7)
+		error-=7;
+	/*
+	if(value<4) {
+		if(LostTime++>1500) {
+			PAR.Speed_Set=0;
+		}
+	} else {
+		LostTime=0;
+	}
+	*/
+	return error;
+	//if((a<10||b<10)&&ABS(a,b)<6/*||AD[1]<thread*/) {
+
+}
+inline int lost1(float error,float Last,int16_t *AD) {
+	int min=30,max=80,i;
+	uint8_t value=FindMax(AD,3);
+	if(dir!=0) {
+		if((value<=8&&ABS(AD[0]+AD[3],AD[2]+AD[4])<6)||(dir==1&&AD[0]+AD[3]>=AD[2]+AD[4])||(dir==-1&&AD[2]+AD[4]>=AD[0]+AD[3])) {
 			error=Last;
 		}
 	}
@@ -835,10 +869,10 @@ void LINFlex0_RXI_ISR()
 }
 //*******************************ADC采样函数***************************************
 /*	  单片机电感接口位置
-						ANP13
-ANP3		ANP2		ANP1
-			ANP11		ANP10
-			ANP8		ANP9
+						ANP13 31
+ANP3 27		ANP2 用不了	ANP1 43
+			ANP11 38	ANP10 26
+			ANP8 26		ANP9 25
 -----------------------------
 		两排电感排布
  	 AD[0]	 AD[1]	 AD[2]
@@ -846,9 +880,25 @@ ANP3		ANP2		ANP1
 
 
 	 AD[3]   AD[4]	 AD[5]
-	ANP[2]	ANP[1]  ANP[13]
+	ANP[2]	ANP[1]  ANP[13] 
 */
+/*
+1 1
+2 4
+3 8
+8 100
+9 200
+10 400
+11 800
+13 2000
 
+8 	0
+9 	1
+11 	2
+10 	3
+13 	4
+
+*/
 
 void Sampling( void )       
 {
@@ -859,7 +909,7 @@ void Sampling( void )
     ADC.NCMR[0].R = 0x00002000;     			   /* Select ANP  13 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
-    {
+    { 
         while ( ADC.CDR[13].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
         samplearray[4][i] = ADC.CDR[13].B.CDATA;  /* Read ANS0 conversion result data */
     }
@@ -893,7 +943,7 @@ void Sampling( void )
     }
     ADC.MCR.B.NSTART=0;
 //------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x00000100;     			   /* Select ANP  8 */
+    ADC.NCMR[0].R = 0x000100;     			   /* Select ANP  8 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
     {
@@ -1397,10 +1447,20 @@ void TrackIdentification(int16_t *AD) {
 }
 /***************************************环岛识别*******************************************/
 void CircuitIdentification(int16_t *AD) {
-	if(AD[3]<90&&AD[3]>20&&AD[4]<90&&AD[4]>20&&ABS(AD[3],AD[4])<30&&CircuitFlag==0)
-		CircuitFlag=1;	
-	else if(CircuitFlag==1&&AD[1]>110)
-		CircuitFlag=0;
+	if(CircuitFlag==0) {
+		if(AD[3]<90&&AD[3]>20&&AD[4]<90&&AD[4]>20&&ABS(AD[3],AD[4])<30)
+			CircuitFlag=1;
+		if(AD[1]>=AD[0]&&AD[1]>=AD[2]&&AD[0]>20&&AD[1]>20&&AD[2]>20&&AD[0]<80&&AD[1]<80&&AD[2]<80&&ABS(AD[0],AD[1])<25&&ABS(AD[2],AD[1])<25)
+			CircuitFlag=1;		
+	} else if(CircuitFlag==1&&AD[1]>120) {
+		CircuitFlag=0;	
+	}
+	if(CircuitFlag==1) {
+		BEE_OUTPUT=HIGH;
+	} else {
+		BEE_OUTPUT=LOW;
+	}
+		
 }
 /***************************************十字识别*******************************************/
 void CrossIdentification(int16_t *AD) {
@@ -1490,12 +1550,13 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
     	Position = Position_Old;
     }
     Position_Old = Position;
-    
+/*-----------------------------赛道识别----------------------------------*/
+   // CircuitIdentification(AD);
 /*-----------------------------偏差计算与滤波----------------------------------*/
 	/*水平偏差*/
 	ErrorP=lost(((sqrt((float)AD[2])-sqrt((float)AD[0]))/((float)AD[2]+(float)AD[0]+1)*Thread),(float)LastErrorP,AD);
 	/*水平垂直偏差*/
-	ErrorVP=lost(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),-200,200),(float)LastErrorVP,AD);
+	ErrorVP=lost1(limit1(((sqrt((float)AD[2]+(float)AD[4])-sqrt((float)AD[0]+(float)AD[3]))/((float)AD[2]+(float)AD[0]+1)*Thread),-400,400),(float)LastErrorVP,AD);
 	/*垂直偏差*/
 	ErrorV=limit1(AD[4]-AD[3],-100,100);
 /*------------------------------偏差融合----------------------------------*/
@@ -2012,12 +2073,12 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=205;Max_Valu[1]=203;Max_Valu[2]=200;Max_Valu[3]=210;Max_Valu[4]=210;
-	Noise_Value[0]=26;Noise_Value[1]=23;Noise_Value[2]=25;Noise_Value[3]=29;Noise_Value[4]=28;
+	Max_Valu[0]=210;Max_Valu[1]=210;Max_Valu[2]=210;Max_Valu[3]=190;Max_Valu[4]=190;
+	Noise_Value[0]=51;Noise_Value[1]=69;Noise_Value[2]=71;Noise_Value[3]=41;Noise_Value[4]=43;
 	NormalizePT[0]=51;NormalizePT[1]=53;
-	PAR.Speed_Set = 2300;
-	PAR.Steer_D = 310;
-	PAR.Steer_P = 300;
+	PAR.Speed_Set = 2600;
+	PAR.Steer_P = 320;
+	PAR.Steer_D = 340;
 }
 /*******************************主函数*******************************************/
 void main ( void )
@@ -2038,21 +2099,21 @@ void main ( void )
     enableIrq();
     
 
-	Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
+	//Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
     
-    //BEE_CONFIG = port_output;
-    //BEE_OUTPUT = LOW;
+    BEE_CONFIG = port_output;
+    BEE_OUTPUT = LOW;
 
     delay_ms( 1000 );   //显示屏初始化需要一段延时 否则无法显示
     initI2C();         // IIC初始化
     OLED_Init();	   //初始化OLED
     OLED_Clear( 0,7 );
     Desktop();
-    /*
+    
     PAR_init();      
     NoiseValue_init( Noise_Value );	
     Find_Transit_front( NormalizePT, Max_Value, Noise_Value );  
-    */
+    
     xianshi();
     
     OLED_Clear( 0,7 );
@@ -2069,11 +2130,16 @@ void main ( void )
 		}
 		/*
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
+			
+			OLED_ShowNum( 40,0,ABS(ErrorP,0),4,16 );
+			OLED_ShowNum( 40,4,ABS(ErrorVP,0),4,16 );
+			
 			OLED_ShowNum( 20,0,AD[3],4,16 );	
        		OLED_ShowNum( 60,0,AD[4],4,16 );
        		OLED_ShowNum( 0,4,AD[0],4,16 );
 			OLED_ShowNum( 40,4,AD[1],4,16 );
 			OLED_ShowNum( 80,4,AD[2],4,16 );
+       		
        	}
        	*/
         //DisplaySwitch(AD);
