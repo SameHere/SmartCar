@@ -22,6 +22,7 @@ void Bubble_Sort( uint16_t *pList, uint8_t index );
 uint16_t Extremum_Cut(uint16_t *pList, uint8_t index, uint8_t HeadCutNum, uint8_t TailCutNum );
 void motor_drive( int16_t zkb );
 void Show_Me_Data( uint16_t number_test,uint8_t change,uint8_t flag );
+float sqrt( float x );
 /*---------------------------------------------------------------------------------------*/
 #define   servo_pwm      EMIOS_0.CH[21].CBDR.R     //Maximal value is 13333
 #define   motor_pwm    	 EMIOS_0.CH[13].CBDR.R     //Maximal value is 8000
@@ -440,6 +441,9 @@ inline int lost(float error,float Last,int16_t *AD) {
 
 }
 /*-------------------------------------------------------------------*/
+//int CalculationErrorLost(float P1,float P2,float Last,int mixLimit,int maxLimit) {
+//	float error=(sqrt(P1)-sqrt(P2))/(P1+P2);
+//}
 int8_t FuHao( int16_t x )
 {
     if( x>0 )
@@ -2065,8 +2069,11 @@ void main ( void )
 		}
 		/*
 		if(markerror_pointer%ARR_MARKERROR_LENGTH==0) {
-       		OLED_ShowNum( 40,0,ABS(ErrorP,0),4,16 );
-			OLED_ShowNum( 40,3,ABS(ErrorVP,0),4,16 );
+			OLED_ShowNum( 20,0,AD[3],4,16 );	
+       		OLED_ShowNum( 60,0,AD[4],4,16 );
+       		OLED_ShowNum( 0,4,AD[0],4,16 );
+			OLED_ShowNum( 40,4,AD[1],4,16 );
+			OLED_ShowNum( 80,4,AD[2],4,16 );
        	}
        	*/
         //DisplaySwitch(AD);

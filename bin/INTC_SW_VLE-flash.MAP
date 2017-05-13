@@ -97,28 +97,28 @@ Link map of __start
      4] OLED_ShowCHinese (func,global) found in OLED_IIC_initiative.o 
       5] OLED_Set_Pos (func,global) found in OLED_IIC_initiative.o 
       5] Hzk (object,global) found in OLED_IIC_initiative.o 
-     4] @35 (object,local) found in main.o 
+     4] @36 (object,local) found in main.o 
      4] OLED_ShowString (func,global) found in OLED_IIC_initiative.o 
       5] OLED_ShowChar (func,global) found in OLED_IIC_initiative.o 
        6] F8X16 (object,global) found in OLED_IIC_initiative.o 
        6] F6x8 (object,global) found in OLED_IIC_initiative.o 
     3] xianshi (func,global) found in main.o 
      4] Show_Me_Data (func,global) found in main.o 
-      5] @102 (object,local) found in main.o 
-      5] @109 (object,local) found in main.o 
       5] @103 (object,local) found in main.o 
+      5] @110 (object,local) found in main.o 
       5] @104 (object,local) found in main.o 
       5] @105 (object,local) found in main.o 
-      5] Distance (object,global) found in main.o 
       5] @106 (object,local) found in main.o 
+      5] Distance (object,global) found in main.o 
       5] @107 (object,local) found in main.o 
-      5] Thread (object,global) found in main.o 
       5] @108 (object,local) found in main.o 
+      5] Thread (object,global) found in main.o 
+      5] @109 (object,local) found in main.o 
       5] thread (object,global) found in main.o 
       5] OLED_ShowNum (func,global) found in OLED_IIC_initiative.o 
        6] oled_pow (func,global) found in OLED_IIC_initiative.o 
-     4] @139 (object,local) found in main.o 
      4] @140 (object,local) found in main.o 
+     4] @141 (object,local) found in main.o 
     3] Sampling (func,global) found in main.o 
      4] ADC_flag (object,global) found in main.o 
      4] Bubble_Sort (func,global) found in main.o 
@@ -152,7 +152,7 @@ Link map of __start
         7] compare_dispatch (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
          8] _d_for (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
         7] f_compare_un (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-     4] @785 (object,local) found in main.o 
+     4] @786 (object,local) found in main.o 
      4] _f_fge (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
      4] _f_ftou (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
       5] f_toshortX_common (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
@@ -173,7 +173,7 @@ Link map of __start
       5] f_coerce_result_precalculated_data (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
       5] f_result_is_x (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
      4] sqrt (func,global) found in main.o 
-      5] @321 (object,local) found in main.o 
+      5] @322 (object,local) found in main.o 
       5] _f_flt (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
       5] _f_ftod (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
        6] d_coerce_result (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
@@ -183,7 +183,7 @@ Link map of __start
        6] d_result_is_zero (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
        6] d_result_is_INF (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
        6] d_result_is_Invalid (notype,local) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
-      5] @320 (object,local) found in main.o 
+      5] @321 (object,local) found in main.o 
       5] _d_dtof (notype,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
        6] _f_qtof (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
       5] _f_sub (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
@@ -192,7 +192,7 @@ Link map of __start
       5] _f_feq (func,global) found in Runtime.PPCEABI.VS.UC.a C:\CVSCheckOut\eppc_support\Do_Not_Distribute\zen_fpemu\Src\vle_ppcsfpe.o
      4] lost (func,weak) found in main.o 
       5] dir (object,global) found in main.o 
-      5] @1560 (object,local) found in main.o 
+      5] @1561 (object,local) found in main.o 
       5] FindMax (func,weak) found in main.o 
      4] LastErrorVP (object,global) found in main.o 
      4] limit1 (func,weak) found in main.o 
@@ -224,7 +224,7 @@ Link map of __start
     3] .text (section,local) found in IntcIsrVectors.o 
     3] .text.15 (notype,local) found in IntcIsrVectors.o 
     3] .text (section,local) found in main.o 
-    3] .text.2065 (notype,local) found in main.o 
+    3] .text.2066 (notype,local) found in main.o 
     3] .text (section,local) found in MPC560xB_HWInit.o 
     3] .text.34 (notype,local) found in MPC560xB_HWInit.o 
     3] .text (section,local) found in Core_config.o 
@@ -348,7 +348,7 @@ Link map of __start
   00001736 000066 00022736 00002736  2 Dubug_Mode 	main.o 
   0000179c 0000ec 0002279c 0000279c  2 main 	main.o 
   00001888 000070 00022888 00002888  2 Servo_PD 	main.o 
-  000018f8 000000 000228f8 000028f8  1 .text.2065 	main.o 
+  000018f8 000000 000228f8 000028f8  1 .text.2066 	main.o 
   000018f8 00001e 000228f8 000028f8  1 .text 	MPC560xB_HWInit.o 
   000018f8 00001e 000228f8 000028f8  2 INIT_Derivative 	MPC560xB_HWInit.o 
   UNUSED   000012 ........ ........    INIT_ExternalBusAndMemory MPC560xB_HWInit.o 
@@ -705,10 +705,10 @@ Link map of __start
   address  Size   address  offset
   ---------------------------------
   00000000 000014 00024fd0 00004fd0  1 .sdata2 	main.o 
-  00000000 000008 00024fd0 00004fd0  8 @320 	main.o 
-  00000008 000004 00024fd8 00004fd8  4 @321 	main.o 
-  0000000c 000004 00024fdc 00004fdc  4 @785 	main.o 
-  00000010 000004 00024fe0 00004fe0  4 @1560 	main.o 
+  00000000 000008 00024fd0 00004fd0  8 @321 	main.o 
+  00000008 000004 00024fd8 00004fd8  4 @322 	main.o 
+  0000000c 000004 00024fdc 00004fdc  4 @786 	main.o 
+  00000010 000004 00024fe0 00004fe0  4 @1561 	main.o 
 
 
 extab section layout
@@ -729,16 +729,16 @@ extabindex section layout
   ---------------------------------
   00000000 000064 40000000 00004fe8  1 .data 	main.o 
   UNUSED   00000a ........ ........    P main.o 
-  00000000 00000b 40000000 00004fe8  4 @103 	main.o 
-  0000000c 000009 4000000c 00004ff4  4 @104 	main.o 
-  00000018 000009 40000018 00005000  4 @105 	main.o 
-  00000024 00000a 40000024 0000500c  4 @106 	main.o 
-  00000030 00000d 40000030 00005018  4 @107 	main.o 
-  00000040 000024 40000040 00005028  4 @109 	main.o 
-  UNUSED   00000d ........ ........    @165 main.o 
-  UNUSED   00000e ........ ........    @182 main.o 
-  UNUSED   00000f ........ ........    @762 main.o 
-  UNUSED   00000e ........ ........    @916 main.o 
+  00000000 00000b 40000000 00004fe8  4 @104 	main.o 
+  0000000c 000009 4000000c 00004ff4  4 @105 	main.o 
+  00000018 000009 40000018 00005000  4 @106 	main.o 
+  00000024 00000a 40000024 0000500c  4 @107 	main.o 
+  00000030 00000d 40000030 00005018  4 @108 	main.o 
+  00000040 000024 40000040 00005028  4 @110 	main.o 
+  UNUSED   00000d ........ ........    @166 main.o 
+  UNUSED   00000e ........ ........    @183 main.o 
+  UNUSED   00000f ........ ........    @763 main.o 
+  UNUSED   00000e ........ ........    @917 main.o 
   UNUSED   00001c ........ ........    SetError main.o 
   UNUSED   00001c ........ ........    SetErrorRate main.o 
   UNUSED   00001c ........ ........    KPdan main.o 
@@ -758,11 +758,11 @@ extabindex section layout
   00000000 000004 40000328 00005310  4 Distance 	main.o 
   00000004 000004 4000032c 00005314  4 Thread 	main.o 
   00000008 000004 40000330 00005318  4 thread 	main.o 
-  00000010 000008 40000338 00005320  8 @35 	main.o 
-  00000018 000003 40000340 00005328  4 @102 	main.o 
-  00000020 000008 40000348 00005330  8 @108 	main.o 
-  00000028 000005 40000350 00005338  4 @139 	main.o 
-  00000030 000005 40000358 00005340  4 @140 	main.o 
+  00000010 000008 40000338 00005320  8 @36 	main.o 
+  00000018 000003 40000340 00005328  4 @103 	main.o 
+  00000020 000008 40000348 00005330  8 @109 	main.o 
+  00000028 000005 40000350 00005338  4 @140 	main.o 
+  00000030 000005 40000358 00005340  4 @141 	main.o 
   00000035 000001 4000035d 00005345  1 period_sum_times 	main.o 
   00000036 000001 4000035e 00005346  1 Max_Cross 	main.o 
   00000037 000001 4000035f 00005347  1 Position_Old 	main.o 
