@@ -886,7 +886,7 @@ ANP3 		ANP2 20	ANP1 20
 	ANP[2]	ANP[1]  ANP[13] 
 */
 /*
-1 1
+1 2
 2 4
 3 8
 8 100
@@ -901,25 +901,28 @@ ANP3 		ANP2 20	ANP1 20
 10 	3
 13 	4
 
- 2	1
-9 10 13
+ 2	10
+9 1 13
 */
 void Sampling( void )       
-{
+{	
     uint16_t i=0,j=0;
     uint16_t AD_SUM=0;
     uint16_t samplearray[6][SAMPLING_TIME]= {0};		// 直接的ADC采样值
+
+	
+	//旧板子
 	//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x00000002;     			   /* Select ANP  1 */
+    ADC.NCMR[0].R = 0x00000400;     			   /* Select ANP  10 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
     { 
-        while ( ADC.CDR[1].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
-        samplearray[4][i] = ADC.CDR[1].B.CDATA;  /* Read ANS0 conversion result data */
+        while ( ADC.CDR[10].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
+        samplearray[4][i] = ADC.CDR[10].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;
     
-//------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
     ADC.NCMR[0].R = 0x00000004;     			   /* Select ANP  2 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
@@ -928,7 +931,7 @@ void Sampling( void )
         samplearray[3][i] = ADC.CDR[2].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;
-//------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
     ADC.NCMR[0].R = 0x00002000;     			   /* Select ANP  13 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
@@ -937,17 +940,17 @@ void Sampling( void )
         samplearray[2][i] = ADC.CDR[13].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;
-//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x00000400;     			   /* Select ANP  10 */
+	//------------------------------------------------------------------------------------------
+    ADC.NCMR[0].R = 0x00000002;     			   /* Select ANP  1 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
     {
-        while ( ADC.CDR[10].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
-        samplearray[1][i] = ADC.CDR[10].B.CDATA;  /* Read ANS0 conversion result data */
+        while ( ADC.CDR[1].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
+        samplearray[1][i] = ADC.CDR[1].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;
-//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x000200;     			   /* Select ANP  9 */
+	//------------------------------------------------------------------------------------------
+    ADC.NCMR[0].R = 0x000100;     			   /* Select ANP  9 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
     {
@@ -955,8 +958,7 @@ void Sampling( void )
         samplearray[0][i] = ADC.CDR[9].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;                            /* finish the current chain conversion and stops the operation.*/
-
-//------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
     ADC_flag++;
     if( ADC_flag >= 20 )
     {
@@ -1575,9 +1577,7 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	
 	//Error=(WeightFit*ErrorFit+WeightV*ErrorV)/(WeightFit+WeightV);
 	//Error=ErrorP;
-	
-
-		Error=ErrorFit;
+	Error=ErrorFit;
 /*-----------------------------偏移量存储---------------------------------*/
 		
 	
@@ -2084,9 +2084,10 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=220;Max_Valu[4]=220;
-	//Max_Valu[0]=190;Max_Valu[1]=190;Max_Valu[2]=190;Max_Valu[3]=190;Max_Valu[4]=190;
-	Noise_Value[0]=20;Noise_Value[1]=20;Noise_Value[2]=20;Noise_Value[3]=20;Noise_Value[4]=20;
+	//Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=220;Max_Valu[4]=220;
+	Max_Valu[0]=220;Max_Valu[1]=218;Max_Valu[2]=220;Max_Valu[3]=260;Max_Valu[4]=260;
+	//Noise_Value[0]=20;Noise_Value[1]=20;Noise_Value[2]=20;Noise_Value[3]=20;Noise_Value[4]=20;
+	Noise_Value[0]=23;Noise_Value[1]=25;Noise_Value[2]=24;Noise_Value[3]=26;Noise_Value[4]=23;
 	NormalizePT[0]=51;NormalizePT[1]=53;
 	PAR.Speed_Set = 2600;
 	PAR.Steer_P = 320;
@@ -2111,7 +2112,7 @@ void main ( void )
     enableIrq();
     
 	
-	//Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
+	Dubug_Mode(Max_Value,Noise_Value,NormalizePT);
     
     BEE_CONFIG = port_output;
     BEE_OUTPUT = LOW;
