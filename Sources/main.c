@@ -412,7 +412,7 @@ inline int FindMax(int16_t* AD,int n) {
 int dir=0;
 uint16_t LostTime=0;
 inline int lost(float error,float Last,int16_t *AD) {
-	int min=30,max=80,i;
+	int min=15,max=60,i;
 	uint8_t value=FindMax(AD,3);
 	if(dir!=0) {
 		if((value<=8&&ABS(AD[0],AD[2])<5)||(dir==1&&AD[0]>=AD[2])||(dir==-1&&AD[2]>=AD[0])) {
