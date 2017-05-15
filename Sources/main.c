@@ -29,7 +29,7 @@ void CircuitIdentification(int16_t *AD);
 #define   motor_pwm    	 EMIOS_0.CH[13].CBDR.R     //Maximal value is 8000
 #define   servo_max     	1300//右转极限
 #define   servo_min     	-1300//左转极限
-#define   servo_mid     	5940
+#define   servo_mid     	5700
 #define Error_lishudu_Max  	200
 #define Error_c_lishudu_Max 200
 /*========================================================================================*/
@@ -71,7 +71,7 @@ int Error=0;int LastError1=0;
 int ErrorP=0;int LastErrorP=0;
 int ErrorVP=0;int LastErrorVP=0;
 int ErrorV=0;int LastErrorV=0;
-int LastError=0;
+int LastError=0;int ErrorC=0;
 int16_t CircuitAD[6]={0};
 int16_t CircuitErrorP=0;
 int16_t LastCircuitErrorP=0;
@@ -107,8 +107,8 @@ int thread=7;
 #define   BEE_CONFIG                  SIU.PCR[PCR47_PC15].R
 #define   BEE_OUTPUT                  SIU.GPDO[PCR47_PC15].R
 
-#define   SAMPLING_TIME                       15     //采样次数
-#define   ARR_MARKERROR_LENGTH                35
+#define   SAMPLING_TIME                       65     //采样次数
+#define   ARR_MARKERROR_LENGTH                25
 
 
 #define  port_output   0x0200                                                           //*
@@ -252,8 +252,8 @@ void xianshi( void )
         //***********待修改参数*************************//
         Show_Me_Data( PAR.Speed_Set,100,1 );
         //Show_Me_Data( thread,1,8 );
-		Show_Me_Data( PAR.Steer_P,5,3 );
-        Show_Me_Data( PAR.Steer_D,5,4 );
+		Show_Me_Data( PAR.Steer_P,10,3 );
+        Show_Me_Data( PAR.Steer_D,10,4 );
         Show_Me_Data( Thread, 25, 7 );
         
         //Show_Me_Data( Distance, 100, 5 );
@@ -378,11 +378,11 @@ int Least_Square_Method(int n, int* data,int start) {
 		sumxx += (i*i);
 		start++;
 	}
-	Numerator  = (n*sumxy - sumx*sumy)*100;
+	Numerator  = (n*sumxy - sumx*sumy);
 	Denominator = n*sumxx - sumx*sumx;
 	if (Denominator == 0)
 		Denominator = 1;
-	K = Numerator / Denominator;
+	K = 7*Numerator / Denominator;
 	return K;
 }
 /*-------------------------------------------------------------------*/
@@ -415,7 +415,7 @@ inline int lost(float error,float Last,int16_t *AD) {
 	int min=30,max=80,i;
 	uint8_t value=FindMax(AD,3);
 	if(dir!=0) {
-		if((value<=8&&ABS(AD[0],AD[2])<6)||(dir==1&&AD[0]>=AD[2])||(dir==-1&&AD[2]>=AD[0])) {
+		if((value<=8&&ABS(AD[0],AD[2])<5)||(dir==1&&AD[0]>=AD[2])||(dir==-1&&AD[2]>=AD[0])) {
 			error=Last;
 		}
 	}
@@ -427,10 +427,11 @@ inline int lost(float error,float Last,int16_t *AD) {
 	} else if(AD[1]>max) {
 		dir=0;	
 	}
+	
 	if(error-Last>7)
-		error+=7;
+		error=Last+7;
 	else if(Last-error>7)
-		error-=7;
+		error=Last-7;
 	/*
 	if(value<4) {
 		if(LostTime++>1500) {
@@ -904,6 +905,7 @@ ANP3 		ANP2 20	ANP1 20
  2	10
 9 1 13
 */
+int16_t MarkADaverage[5][3]={0};
 void Sampling( void )       
 {	
     uint16_t i=0,j=0;
@@ -913,12 +915,12 @@ void Sampling( void )
 	
 	//旧板子
 	//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x00000400;     			   /* Select ANP  10 */
+    ADC.NCMR[0].R = 0x00000008;     			   /* Select ANP  3 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
     { 
-        while ( ADC.CDR[10].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
-        samplearray[4][i] = ADC.CDR[10].B.CDATA;  /* Read ANS0 conversion result data */
+        while ( ADC.CDR[3].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
+        samplearray[4][i] = ADC.CDR[3].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;
     
@@ -932,30 +934,30 @@ void Sampling( void )
     }
     ADC.MCR.B.NSTART=0;
 	//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x00002000;     			   /* Select ANP  13 */
-    ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
-    for( i=0; i<SAMPLING_TIME; i++ )
-    {
-        while ( ADC.CDR[13].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
-        samplearray[2][i] = ADC.CDR[13].B.CDATA;  /* Read ANS0 conversion result data */
-    }
-    ADC.MCR.B.NSTART=0;
-	//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x00000002;     			   /* Select ANP  1 */
-    ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
-    for( i=0; i<SAMPLING_TIME; i++ )
-    {
-        while ( ADC.CDR[1].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
-        samplearray[1][i] = ADC.CDR[1].B.CDATA;  /* Read ANS0 conversion result data */
-    }
-    ADC.MCR.B.NSTART=0;
-	//------------------------------------------------------------------------------------------
-    ADC.NCMR[0].R = 0x000100;     			   /* Select ANP  9 */
+    ADC.NCMR[0].R = 0x00000200;     			   /* Select ANP  9 */
     ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
     for( i=0; i<SAMPLING_TIME; i++ )
     {
         while ( ADC.CDR[9].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
-        samplearray[0][i] = ADC.CDR[9].B.CDATA;  /* Read ANS0 conversion result data */
+        samplearray[2][i] = ADC.CDR[9].B.CDATA;  /* Read ANS0 conversion result data */
+    }
+    ADC.MCR.B.NSTART=0;
+	//------------------------------------------------------------------------------------------
+    ADC.NCMR[0].R = 0x00000400;     			   /* Select ANP  10 */
+    ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
+    for( i=0; i<SAMPLING_TIME; i++ )
+    {
+        while ( ADC.CDR[10].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
+        samplearray[1][i] = ADC.CDR[10].B.CDATA;  /* Read ANS0 conversion result data */
+    }
+    ADC.MCR.B.NSTART=0;
+	//------------------------------------------------------------------------------------------
+    ADC.NCMR[0].R = 0x000100;     			   /* Select ANP  8 */
+    ADC.MCR.B.NSTART=1;             			   /* Trigger normal conversions for ADC0 */
+    for( i=0; i<SAMPLING_TIME; i++ )
+    {
+        while ( ADC.CDR[8].B.VALID == 0 ) {};  	 /* Wait for last scan to complete */
+        samplearray[0][i] = ADC.CDR[8].B.CDATA;  /* Read ANS0 conversion result data */
     }
     ADC.MCR.B.NSTART=0;                            /* finish the current chain conversion and stops the operation.*/
 	//------------------------------------------------------------------------------------------
@@ -966,9 +968,20 @@ void Sampling( void )
         
         for( i=0; i<5; i++ )
         {
-        	Bubble_Sort( samplearray[i], SAMPLING_TIME );
-        	ADaverage[i] = samplearray[i][SAMPLING_TIME/2];
+        	AD_SUM=0;
+        	//Bubble_Sort( samplearray[i], SAMPLING_TIME );
+        	for(j=0;j<SAMPLING_TIME;j++) {
+        		AD_SUM += samplearray[i][j];	
+        	}
+        	ADaverage[i]=AD_SUM/SAMPLING_TIME;
+        	/*
+        	ADaverage[i]=9*ADaverage[i]+1*MarkADaverage[i][0]+2 1
+        	for(j=2;j>0;j--)
+        		MarkADaverage[j]=MarkADaverage[j-1];
+        	MarkADaverage[i][0]=ADaverage[i];	
+			
 //        	ADaverage[i] = Extremum_Cut( samplearray[i], SAMPLING_TIME, 4, 4 );
+        	*/
         }
     }
 //------------------------------------------
@@ -1488,7 +1501,7 @@ int ErrorM=0;
 
 void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 {
-
+	int16_t pointer=0;
 	uint8_t Max_Position=0;     //记录当前的最大电感位置
     uint8_t i=0;
     uint16_t Max_V=0;           //记录当前最大电感值
@@ -1499,6 +1512,8 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	int16_t WeightVP=0;
 	int16_t WeightV=0;
 	int16_t WeightFit=0;
+	int16_t zheng=0;
+	int16_t fu=0;
 	//Filter_AD( AD );
     
     /*--------------------------找最大电感位置--------------------------*/
@@ -1576,8 +1591,8 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	WeightFit=10+ABS(ErrorFit,0);
 	
 	//Error=(WeightFit*ErrorFit+WeightV*ErrorV)/(WeightFit+WeightV);
-	//Error=ErrorP;
-	Error=ErrorFit;
+	Error=ErrorP;
+	//Error=ErrorFit;
 /*-----------------------------偏移量存储---------------------------------*/
 		
 	
@@ -1589,8 +1604,13 @@ void  Position_analyse_front( int16_t *PT, int16_t *Max_Value, int16_t *AD )
 	
    	markerror_pointer %= ARR_MARKERROR_LENGTH;         //使用循环队列存储Error来计算变化率
 	MarkError[markerror_pointer] = Error;
-    LastError = MarkError[( markerror_pointer + 1 )%ARR_MARKERROR_LENGTH ];   //宏定义 ARR_MARKERROR_LENGTH 次之前的error
-    markerror_pointer++;
+    LastError = MarkError[( markerror_pointer + 1 )%ARR_MARKERROR_LENGTH ];   //宏定义 ARR_MARKERROR_LENGTH 次之前的error	
+	ErrorC= Least_Square_Method(20, MarkError,markerror_pointer+31%ARR_MARKERROR_LENGTH );
+	if(ErrorC>30)
+		ErrorC=30;
+	else if(ErrorC<-30)
+		ErrorC=-30;
+	markerror_pointer++;
 }
 /******************************环岛误差计算*************************************/
 void circuitError(int16_t *Noise_Value,int16_t *Max_Value) {
@@ -2008,7 +2028,7 @@ inline void Servo_PD(int16_t *AD ) {
     //ErrorRate=Least_Square_Method(20, MarkError,markerror_pointer+30);
     //PAR.Steer_P=FuzzyKP();
     //PAR.Steer_D=FuzzyKD();
-    Steer_output =  ( PAR.Steer_P*Error + PAR.Steer_D*( Error - LastError ) );
+    Steer_output =   PAR.Steer_P*Error + PAR.Steer_D*ErrorC;//( Error - LastError ) ;
     Steer_output = servo_mid + Steer_output/10;
     /*
     if(CrossFlag==1) {
@@ -2084,14 +2104,14 @@ void DisplaySwitch(int16_t *AD) {
 /*****************************数值提前设置***************************************/
 void Dubug_Mode(int16_t *Max_Valu, int16_t *Noise_Value, int16_t *NormalizePT )
 {
-	//Max_Valu[0]=230;Max_Valu[1]=230;Max_Valu[2]=230;Max_Valu[3]=220;Max_Valu[4]=220;
-	Max_Valu[0]=220;Max_Valu[1]=218;Max_Valu[2]=220;Max_Valu[3]=260;Max_Valu[4]=260;
-	//Noise_Value[0]=20;Noise_Value[1]=20;Noise_Value[2]=20;Noise_Value[3]=20;Noise_Value[4]=20;
-	Noise_Value[0]=23;Noise_Value[1]=25;Noise_Value[2]=24;Noise_Value[3]=26;Noise_Value[4]=23;
+	Max_Valu[0]=210;Max_Valu[1]=220;Max_Valu[2]=210;//Max_Valu[3]=225;Max_Valu[4]=235;
+	//Max_Valu[0]=220;Max_Valu[1]=218;Max_Valu[2]=220;Max_Valu[3]=260;Max_Valu[4]=260;
+	Noise_Value[0]=25;Noise_Value[1]=30;Noise_Value[2]=25;Noise_Value[3]=20;Noise_Value[4]=20;
+	//Noise_Value[0]=23;Noise_Value[1]=25;Noise_Value[2]=24;Noise_Value[3]=26;Noise_Value[4]=23;
 	NormalizePT[0]=51;NormalizePT[1]=53;
 	PAR.Speed_Set = 2600;
-	PAR.Steer_P = 320;
-	PAR.Steer_D = 340;
+	PAR.Steer_P = 280;
+	PAR.Steer_D = 100;
 }
 /*******************************主函数*******************************************/
 void main ( void )
@@ -2122,11 +2142,11 @@ void main ( void )
     OLED_Init();	   //初始化OLED
     OLED_Clear( 0,7 );
     Desktop();
-    
+    /*
     PAR_init();      
     NoiseValue_init( Noise_Value );	
     Find_Transit_front( NormalizePT, Max_Value, Noise_Value );  
-    
+    */
     xianshi();
     
     OLED_Clear( 0,7 );
@@ -2135,6 +2155,7 @@ void main ( void )
     while ( 1 ) {
     	Sampling( );
 		Normalization( ADaverage, Noise_Value, Max_Value, AD, 6 ,1);
+		
 		//if(CircuitFlag==1)
 		//	Normalization( ADaverage, Noise_Value, Max_Value/2, CircuitAD, 6 );
         
@@ -2149,9 +2170,9 @@ void main ( void )
 			
 			OLED_ShowNum( 40,0,ABS(ErrorP,0),4,16 );
 			OLED_ShowNum( 40,4,ABS(ErrorVP,0),4,16 );
-			
 			OLED_ShowNum( 20,0,AD[3],4,16 );	
        		OLED_ShowNum( 60,0,AD[4],4,16 );
+       		
        		OLED_ShowNum( 0,4,AD[0],4,16 );
 			OLED_ShowNum( 40,4,AD[1],4,16 );
 			OLED_ShowNum( 80,4,AD[2],4,16 );
@@ -2159,7 +2180,7 @@ void main ( void )
        	}
        	*/
         //DisplaySwitch(AD);
-        sbq( ABS(Error,0),ABS(ErrorVP,0) , ABS(ErrorP,0), AD[1]);
+       sbq(AD[0],AD[2],ErrorC, Error);
     	//StopCar();     
     }	
 }
